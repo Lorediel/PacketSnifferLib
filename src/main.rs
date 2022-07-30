@@ -1,11 +1,9 @@
 //MAIN PER TESTARE
 //Per runnare il main: sudo cargo run --package PacketSnifferLib --bin PacketSnifferLib
 use pcap::Device;
+use PacketSnifferLib::PacketCatcher;
 
 fn main() {
-    let mut cap = Device::lookup().unwrap().open().unwrap();
-
-    while let Ok(packet) = cap.next() {
-        println!("received packet! {:?}", packet);
-    }
+    let mut p = PacketCatcher::new();
+    p.capture("en0", "rslts", 2, None);
 }
