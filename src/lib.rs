@@ -14,24 +14,28 @@ use std::thread::JoinHandle;
 use report::*;
 
 pub struct PacketCatcher{
-    cv_m: Arc<(Condvar,Mutex<bool>)>
+    cv_m: Arc<(Condvar,Mutex<bool>)>,
+    report_map: Arc< Mutex<HashMap<AddressPortPair, Report>>>
 }
 impl PacketCatcher {
 
     pub fn new() -> PacketCatcher {
-        PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false)))}
+        let mut report_map = Arc::new(Mutex::new(HashMap::new()));
+        PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map}
     }
 
     pub fn capture(
         &mut self,
-        device_name: &str,
+        device_name: &'static str,
         filename: &str,
         interval: u32,
         filter: Option<&str>,
     ) {
+
         let mut cap = Capture::from_device(device_name)
             .unwrap()
             .promisc(true)
+            .immediate_mode(true)
             .open()
             .unwrap();
         //Applica il filtro nel caso ci sia, altrimenti non fare nulla
@@ -42,32 +46,40 @@ impl PacketCatcher {
             None => {}
         }
 
-        let mut map = HashMap::new();
-
         let is_blocked = Arc::clone(&self.cv_m);
+        let mut arc_map = Arc::clone(&self.report_map);
         let h = thread::spawn(move || {
+            let mut i = 0;
             while let Ok(packet) = cap.next() {
                 let (cvar, lock) = &*is_blocked;
 
                 let mut is_b = lock.lock().unwrap();
                 while *is_b {
+                    std::mem::drop(cap);
                     is_b = cvar.wait(is_b).unwrap();
+                    //println!("uscito: {:?}", packet.header.ts.tv_sec.unsigned_abs());
+                    cap = Capture::from_device(device_name)
+                        .unwrap()
+                        .promisc(true)
+                        .immediate_mode(true)
+                        .open()
+                        .unwrap();
                 }
                 let x = cap.next();
 
                 let packet = x.unwrap();
                 //self.tx.send(packet);
+
+                let mut map = arc_map.lock().unwrap();
                 parse_packet(packet, &mut map);
-
-
+                i+=1;
+                //println!("new packet {}", i);
+                /*
                 for (key, value) in map.iter() {
                     println!("{:?}, {:?}", key, value);
-                }
+                }*/
             }
         });
-
-
-
 
         fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
             match SlicedPacket::from_ethernet(&packet) {
@@ -105,4 +117,26 @@ impl PacketCatcher {
             }
         }
     }
+
+    pub fn switch(&mut self, val: bool){
+        let cv_m = Arc::clone(&self.cv_m);
+        let (cvar, lock) = &*cv_m;
+        let mut is_b = lock.lock().unwrap();
+        *is_b = val;
+        cvar.notify_one();
+    }
+
+    pub fn empty_report(&mut self){
+
+        let mut arc_map = Arc::clone(&self.report_map);
+        let mut map = arc_map.lock().unwrap();
+        for (key, value) in map.iter() {
+            println!("{:?}, {:?}", key, value);
+        }
+        map.clear();
+        for (key, value) in map.iter() {
+            println!("===");
+        }
+    }
+
 }

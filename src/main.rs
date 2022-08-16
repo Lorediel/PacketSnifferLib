@@ -10,6 +10,11 @@ fn main() {
     let mut p = PacketCatcher::new();
     //Fare filtri manualmente perché pcap non funzionano
     p.capture("en0", "rslts", 2, None);
+
+    thread::sleep(Duration::from_secs(10));
+    p.switch(true);
+    p.empty_report();
+    //println!("{:?}", Device::list().unwrap());
     thread::sleep(Duration::from_secs(100));
 
 }
