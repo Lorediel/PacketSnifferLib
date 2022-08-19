@@ -15,13 +15,14 @@ use report::*;
 
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
-    report_map: Arc< Mutex<HashMap<AddressPortPair, Report>>>
+    report_map: Arc< Mutex<HashMap<AddressPortPair, Report>>>,
+    pub h: Option<JoinHandle<()>>
 }
 impl PacketCatcher {
 
     pub fn new() -> PacketCatcher {
         let mut report_map = Arc::new(Mutex::new(HashMap::new()));
-        PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map}
+        PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, h: None}
     }
 
     pub fn capture(
@@ -80,6 +81,8 @@ impl PacketCatcher {
                 }*/
             }
         });
+
+        self.h = Some(h);
 
         fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
             match SlicedPacket::from_ethernet(&packet) {
