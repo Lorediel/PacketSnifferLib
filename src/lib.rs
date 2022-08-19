@@ -91,11 +91,19 @@ impl PacketCatcher {
                     if transport_level.is_some() && network_level.is_some() {
                         let tl = transport_level.unwrap();
                         let nl = network_level.unwrap();
+                        let first_port = match tl.source_port {
+                            Some(port) => port,
+                            None => "No port".to_string()
+                        };
+                        let second_port = match tl.destination_port {
+                            Some(port) => port,
+                            None => "No port".to_string()
+                        };
                         let pair = AddressPortPair::new(
                             nl.source_address,
-                            tl.source_port.unwrap(),
+                            first_port,
                             nl.destination_address,
-                            tl.destination_port.unwrap(),
+                            second_port,
                         );
 
                         let ts = packet.header.ts;

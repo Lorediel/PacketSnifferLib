@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use etherparse::{InternetSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
-use etherparse::TransportSlice::{Tcp, Udp};
+use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
 
 #[derive(Debug)]
 pub struct Report {
@@ -80,13 +80,13 @@ pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<Transp
         match transport_value.unwrap() {
             //Specificare dati Icmp con .icmp_type()
             //table type con .type_u8
-            /*
+
             Icmpv4(i_slice) => {
                 return Some(TransportInfo{protocol: "Icmpv4".to_string(), source_port: None, destination_port: None});
             },
             Icmpv6(i_slice) => {
                 return Some(TransportInfo{protocol: "Icmpv6".to_string(), source_port: None, destination_port: None});
-            },*/
+            },
             Udp(header) => {
                 return Some(TransportInfo{protocol: "UDP".to_string(), source_port: Some(header.source_port().to_string()), destination_port: Some(header.destination_port().to_string())});
             },
