@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use etherparse::{InternetSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
+use pcap::Packet;
 
 #[derive(Debug)]
 pub struct Report {
@@ -118,6 +119,21 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
                 return Some(NetworkInfo{protocol: "IPv6".to_string(), source_address: header.source_addr().to_string(), destination_address: header.destination_addr().to_string()});
             }
         }
+    }
+    None
+}
+
+#[derive(Debug)]
+pub struct DnsInfo {
+    pub id: u16,
+    pub opcode: dns_parser::Opcode,
+    pub response_code: dns_parser::ResponseCode
+}
+
+pub fn parse_dns(dns_packet: Option<dns_parser::Packet<'_>>) -> Option<DnsInfo> {
+    if dns_packet.is_some() {
+                let dns = dns_packet.unwrap();
+                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code});
     }
     None
 }

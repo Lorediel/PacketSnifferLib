@@ -85,6 +85,14 @@ impl PacketCatcher {
         self.h = Some(h);
 
         fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
+/*
+            match dns_parser::Packet::parse(&packet) {
+                Err(value) => println!("Err {:?}", value),
+                Ok(value) => {
+                    //TO DO
+                }
+            }
+*/
             match SlicedPacket::from_ethernet(&packet) {
                 Err(value) => println!("Err {:?}", value),
                 Ok(value) => {
@@ -126,6 +134,8 @@ impl PacketCatcher {
                     }
                 }
             }
+
+
         }
     }
 
