@@ -108,6 +108,10 @@ impl PacketCatcher {
                             nl.destination_address,
                             second_port,
                         );
+                        let mut icmp_string = match tl.icmp_type {
+                            Some(icmp) => icmp,
+                            None => "".to_string()
+                        };
 
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
@@ -116,12 +120,14 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
+                            icmp_string.clone()
                         ));
                         this_entry.update_report(
                             ts.tv_sec.unsigned_abs(),
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
+                            icmp_string.clone()
                         );
                     }
                 }
@@ -149,5 +155,10 @@ impl PacketCatcher {
             println!("===");
         }
     }
+
+}
+
+pub fn filter(filter: String){
+
 
 }
