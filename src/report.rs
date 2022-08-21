@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use dns_parser::Question;
 use etherparse::{InternetSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
@@ -10,7 +11,7 @@ pub struct Report {
     last_ts: u64,
     total_bytes: u32,
     transport_layer_protocols: HashSet<String>,
-    network_layer_protocols: HashSet<String>
+    network_layer_protocols: HashSet<String>,
 }
 
 impl Report {
@@ -126,14 +127,15 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
 #[derive(Debug)]
 pub struct DnsInfo {
     pub id: u16,
-    pub opcode: dns_parser::Opcode,
-    pub response_code: dns_parser::ResponseCode
+    pub opcode: simple_dns::OPCODE,
+    pub response_code: simple_dns::RCODE,
+    pub queries: Vec<String>
 }
 
-pub fn parse_dns(dns_packet: Option<dns_parser::Packet<'_>>) -> Option<DnsInfo> {
+pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
-                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code});
+                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect()});
     }
     None
 }

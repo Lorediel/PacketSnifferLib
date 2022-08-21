@@ -11,6 +11,7 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::thread::JoinHandle;
+use dns_message_parser::EncodeError::String;
 use report::*;
 
 pub struct PacketCatcher{
@@ -85,14 +86,8 @@ impl PacketCatcher {
         self.h = Some(h);
 
         fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
-/*
-            match dns_parser::Packet::parse(&packet) {
-                Err(value) => println!("Err {:?}", value),
-                Ok(value) => {
-                    //TO DO
-                }
-            }
-*/
+
+
             match SlicedPacket::from_ethernet(&packet) {
                 Err(value) => println!("Err {:?}", value),
                 Ok(value) => {
@@ -110,12 +105,28 @@ impl PacketCatcher {
                             Some(port) => port,
                             None => "No port".to_string()
                         };
+
+
+                        if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
+                            match simple_dns::Packet::parse(&value.payload){
+                                Err(value1) => {
+                                    if value1.to_string() != "Provided QType is invalid: 65" {
+                                        println!("{:?}", value1.to_string())
+                                    }
+                                },
+                                Ok(value1) => {
+                                    let dns_info = parse_dns(Some(value1));
+                                }
+                            }
+                        }
+
                         let pair = AddressPortPair::new(
                             nl.source_address,
                             first_port,
                             nl.destination_address,
                             second_port,
                         );
+
 
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
@@ -129,11 +140,13 @@ impl PacketCatcher {
                             ts.tv_sec.unsigned_abs(),
                             bytes,
                             tl.protocol.clone(),
-                            nl.protocol.clone(),
+                            nl.protocol.clone()
                         );
                     }
                 }
             }
+
+
 
 
         }
