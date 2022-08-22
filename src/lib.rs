@@ -13,6 +13,7 @@ use std::thread;
 use std::thread::JoinHandle;
 use dns_message_parser::EncodeError::String;
 use report::*;
+use std::time::Duration;
 
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
@@ -93,6 +94,7 @@ impl PacketCatcher {
                 Ok(value) => {
                     let transport_level = parse_transport(value.transport);
                     let network_level = parse_network(value.ip);
+                    let application_level:Option<DnsInfo>;
 
                     if transport_level.is_some() && network_level.is_some() {
                         let tl = transport_level.unwrap();
@@ -115,7 +117,7 @@ impl PacketCatcher {
                                     }
                                 },
                                 Ok(value1) => {
-                                    let dns_info = parse_dns(Some(value1));
+                                     application_level = parse_dns(Some(value1));
                                 }
                             }
                         }
@@ -126,12 +128,13 @@ impl PacketCatcher {
                             nl.destination_address,
                             second_port,
                         );
+
                         let mut icmp_string = match tl.icmp_type {
                             Some(icmp) => icmp,
                             None => "".to_string()
                         };
 
-
+                        let mut dns_string = "";
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
                         let this_entry = report_map.entry(pair).or_insert(Report::new(
@@ -139,14 +142,16 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
-                            icmp_string.clone()
+                            icmp_string.clone(),
+                            dns_string.to_string()
                         ));
                         this_entry.update_report(
                             ts.tv_sec.unsigned_abs(),
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
-                            icmp_string.clone()
+                            icmp_string.clone(),
+                            dns_string.to_string()
                         );
                     }
                 }
@@ -166,6 +171,14 @@ impl PacketCatcher {
         cvar.notify_one();
     }
 
+    pub fn stop_capture(&mut self, val:bool){
+        let cv_m = Arc::clone(&self.cv_m);
+        let (cvar, lock)= &*cv_m;
+        let mut stop= lock.lock().unwrap();
+        thread::sleep(Duration::from_millis(500));
+        cvar.notify_one();
+    }
+
     pub fn empty_report(&mut self){
 
         let mut arc_map = Arc::clone(&self.report_map);
@@ -181,7 +194,10 @@ impl PacketCatcher {
 
 }
 
+/*
+
 pub fn filter(filter: String){
 
 
 }
+*/

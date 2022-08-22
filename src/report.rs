@@ -6,6 +6,7 @@ use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
 use etherparse::Icmpv6Type::*;
 use etherparse::Icmpv4Type::*;
 use pcap::Packet;
+use std::fmt;
 
 #[derive(Debug)]
 pub struct Report {
@@ -14,26 +15,29 @@ pub struct Report {
     total_bytes: u32,
     transport_layer_protocols: HashSet<String>,
     network_layer_protocols: HashSet<String>,
-    icmp_info: HashSet<String>
+    icmp_info: HashSet<String>,
+    dns_info: HashSet<String>
 }
 
 impl Report {
-    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, icmp_string: String) -> Report {
+    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, icmp_string: String, dns_string: String) -> Report {
         let mut t_set = HashSet::new();
         let mut n_set = HashSet::new();
         let mut icmp_set = HashSet::new();
+        let mut dns_set = HashSet::new();
         t_set.insert(tlp);
         n_set.insert(nlp);
-        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, icmp_info: icmp_set}
+        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, icmp_info: icmp_set, dns_info: dns_set}
     }
 
 
-    pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, icmp_inf: String) {
+    pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, icmp_inf: String, dns_inf: String) {
         self.last_ts = ts;
         self.total_bytes += bytes;
         self.transport_layer_protocols.insert(tlp);
         self.network_layer_protocols.insert(nlp);
         self.icmp_info.insert(icmp_inf);
+        self.dns_info.insert(dns_inf);
     }
 
 }
@@ -80,7 +84,7 @@ pub struct TransportInfo {
     pub protocol: String,
     pub source_port: Option<String>,
     pub destination_port: Option<String>,
-    pub icmp_type: Option<String>
+    pub icmp_type: Option<String>,
 }
 
 pub fn icmpv6_type_parser(icmp_type: Option<Icmpv6Type>) -> Option<String>{
@@ -173,18 +177,19 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
     None
 }
 
-#[derive(Debug)]
+#[derive(Debug, )]
 pub struct DnsInfo {
     pub id: u16,
     pub opcode: simple_dns::OPCODE,
     pub response_code: simple_dns::RCODE,
-    pub queries: Vec<String>
+    pub queries: Vec<String>,
+    pub responses : Vec<String>
 }
 
 pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
-                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect()});
+                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(),responses:dns.answers.iter().map(|q| q.name.to_string()).collect() });
     }
     None
 }
