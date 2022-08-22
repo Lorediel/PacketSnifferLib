@@ -1,5 +1,6 @@
 mod report;
 
+use std::borrow::Borrow;
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp, Unknown};
 use etherparse::{InternetSlice, SlicedPacket, TransportSlice};
@@ -96,7 +97,8 @@ impl PacketCatcher {
                 Ok(value) => {
                     let transport_level = parse_transport(value.transport);
                     let network_level = parse_network(value.ip);
-                    let application_level:Option<DnsInfo>;
+
+                    let mut dns_string = "".to_owned();
 
                     if transport_level.is_some() && network_level.is_some() {
                         let tl = transport_level.unwrap();
@@ -114,12 +116,21 @@ impl PacketCatcher {
                         if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
                             match simple_dns::Packet::parse(&value.payload){
                                 Err(value1) => {
+
                                     if value1.to_string() != "Provided QType is invalid: 65" {
                                         println!("{:?}", value1.to_string())
                                     }
                                 },
                                 Ok(value1) => {
-                                     application_level = parse_dns(Some(value1));
+                                    let application_level =  parse_dns(Some(value1));
+                                    dns_string.push_str("Id: " );
+                                    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
+                                   // dns_string.push_str("; Opcode   " + application_level.unwrap().opcode);
+                                //    dns_string.push_str("; Response code   " + application_level.unwrap().response_code);
+                                    dns_string.push_str("; Questions name: " );
+                                    dns_string.push_str( application_level.as_ref().unwrap().queries.concat().as_str());
+                                    dns_string.push_str("; Responses name: " );
+                                    dns_string.push_str( application_level.as_ref().unwrap().responses.concat().as_str());
                                 }
                             }
                         }
@@ -136,7 +147,10 @@ impl PacketCatcher {
                             None => "".to_string()
                         };
 
-                        let mut dns_string = "";
+
+
+
+
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
                         let this_entry = report_map.entry(pair).or_insert(Report::new(
@@ -145,7 +159,7 @@ impl PacketCatcher {
                             tl.protocol.clone(),
                             nl.protocol.clone(),
                             icmp_string.clone(),
-                            dns_string.to_string()
+                            dns_string.clone().to_string()
                         ));
                         this_entry.update_report(
                             ts.tv_sec.unsigned_abs().into(),
@@ -153,7 +167,7 @@ impl PacketCatcher {
                             tl.protocol.clone(),
                             nl.protocol.clone(),
                             icmp_string.clone(),
-                            dns_string.to_string()
+                            dns_string.clone().to_string()
                         );
                     }
                 }
@@ -173,13 +187,15 @@ impl PacketCatcher {
         cvar.notify_one();
     }
 
-    pub fn stop_capture(&mut self, val:bool){
+  /*  pub fn stop_capture(&mut self, val:bool){
         let cv_m = Arc::clone(&self.cv_m);
         let (cvar, lock)= &*cv_m;
         let mut stop= lock.lock().unwrap();
         thread::sleep(Duration::from_millis(500));
         cvar.notify_one();
     }
+    */
+
 
     pub fn empty_report(&mut self){
 

@@ -207,7 +207,7 @@ pub struct DnsInfo {
 pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
-                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(),responses:dns.answers.iter().map(|q| q.name.to_string()).collect() });
+                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(), responses:dns.answers.iter().map(|q| q.name.to_string()).collect() });
     }
     None
 }
