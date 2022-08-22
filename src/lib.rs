@@ -95,10 +95,12 @@ impl PacketCatcher {
                 Ok(value) => {
                     let transport_level = parse_transport(value.transport);
                     let network_level = parse_network(value.ip);
+                    let link_level = parse_link(value.link);
 
-                    if transport_level.is_some() && network_level.is_some() {
+                    if transport_level.is_some() && network_level.is_some() && link_level.is_some() {
                         let tl = transport_level.unwrap();
                         let nl = network_level.unwrap();
+                        let ll = link_level.unwrap();
                         let first_port = match tl.source_port {
                             Some(port) => port,
                             None => "No port".to_string()
@@ -133,6 +135,7 @@ impl PacketCatcher {
                             None => "".to_string()
                         };
 
+                        let link_string = linkinfo_tostring(ll);
 
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
@@ -141,6 +144,7 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
+                            link_string.clone(),
                             icmp_string.clone()
                         ));
                         this_entry.update_report(
@@ -148,14 +152,12 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
+                            link_string.clone(),
                             icmp_string.clone()
                         );
                     }
                 }
             }
-
-
-
 
         }
     }
