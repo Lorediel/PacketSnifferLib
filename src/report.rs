@@ -1,10 +1,14 @@
 use std::collections::HashSet;
+
 use std::hash::{Hash, Hasher};
+
+use dns_parser::Question;
 use etherparse::{Icmpv4Type, Icmpv6Type, InternetSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
 use etherparse::Icmpv6Type::*;
 use etherparse::Icmpv4Type::*;
+use pcap::Packet;
 
 #[derive(Debug)]
 pub struct Report {
@@ -183,6 +187,22 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
                 return Some(NetworkInfo{protocol: "IPv6".to_string(), source_address: header.source_addr().to_string(), destination_address: header.destination_addr().to_string()});
             }
         }
+    }
+    None
+}
+
+#[derive(Debug)]
+pub struct DnsInfo {
+    pub id: u16,
+    pub opcode: simple_dns::OPCODE,
+    pub response_code: simple_dns::RCODE,
+    pub queries: Vec<String>
+}
+
+pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
+    if dns_packet.is_some() {
+                let dns = dns_packet.unwrap();
+                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect()});
     }
     None
 }

@@ -3,7 +3,7 @@ mod report;
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp, Unknown};
 use etherparse::{InternetSlice, SlicedPacket, TransportSlice};
-use pcap::{Active, Capture, Inactive, Packet};
+use pcap::{Active, Capture, Device, Inactive, Packet};
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use std::path::Path;
@@ -11,7 +11,10 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::thread::JoinHandle;
+//use dns_message_parser::EncodeError::String;
+use std::string::String;
 use report::*;
+
 
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
@@ -85,6 +88,8 @@ impl PacketCatcher {
         self.h = Some(h);
 
         fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
+
+
             match SlicedPacket::from_ethernet(&packet) {
                 Err(value) => println!("Err {:?}", value),
                 Ok(value) => {
@@ -102,6 +107,21 @@ impl PacketCatcher {
                             Some(port) => port,
                             None => "No port".to_string()
                         };
+
+
+                        if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
+                            match simple_dns::Packet::parse(&value.payload){
+                                Err(value1) => {
+                                    if value1.to_string() != "Provided QType is invalid: 65" {
+                                        println!("{:?}", value1.to_string())
+                                    }
+                                },
+                                Ok(value1) => {
+                                    let dns_info = parse_dns(Some(value1));
+                                }
+                            }
+                        }
+
                         let pair = AddressPortPair::new(
                             nl.source_address,
                             first_port,
@@ -113,17 +133,18 @@ impl PacketCatcher {
                             None => "".to_string()
                         };
 
+
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
                         let this_entry = report_map.entry(pair).or_insert(Report::new(
-                            ts.tv_sec.unsigned_abs(),
+                            ts.tv_sec.unsigned_abs().into(),
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
                             icmp_string.clone()
                         ));
                         this_entry.update_report(
-                            ts.tv_sec.unsigned_abs(),
+                            ts.tv_sec.unsigned_abs().into(),
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
@@ -132,6 +153,10 @@ impl PacketCatcher {
                     }
                 }
             }
+
+
+
+
         }
     }
 
@@ -156,9 +181,42 @@ impl PacketCatcher {
         }
     }
 
+    pub fn parse_network_adapter() {
+        let list = Device::list().unwrap();
+        println!("{:?}", list);
+        for (pos, d) in list.into_iter().enumerate() {
+            let mut name = "".to_owned();
+            name.push_str(&(pos+1).to_string());
+            name.push_str(&") ");
+            name.push_str(&d.name);
+            println!("{}", name);
+            let mut s1: String = "       -Description: ".to_owned();
+            let s2: String = "       -Addresses: ".to_owned();
+            let s3 = d.desc;
+            let desc = match s3 {
+                Some(des) => des,
+                None => "No description".to_string()
+            };
+            s1.push_str(&desc);
+            println!("{}", s1); //Description
+            print!("{}", s2); //Addresses
+            print!(" ");
+
+            let mut i = 0;
+            while ( i<d.addresses.len() ) {
+                println!("{:?}", d.addresses[i]);
+                if ( i != d.addresses.len() - 1 ){
+                    print!("                    ");
+                }
+                i+=1;
+            }
+            println!(" ");
+        }
+    }
+
 }
 
-pub fn filter(filter: String){
+/*pub fn filter(filter: String){
 
 
-}
+}*/
