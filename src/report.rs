@@ -1,5 +1,7 @@
 use std::collections::HashSet;
-use std::hash::Hash;
+
+use std::hash::{Hash, Hasher};
+
 use dns_parser::Question;
 use etherparse::{Icmpv4Type, Icmpv6Type, InternetSlice, LinkSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
@@ -11,6 +13,7 @@ use pcap::Packet;
 use std::str;
 use hex::encode;
 use tls_parser::nom::HexDisplay;
+use std::fmt;
 
 #[derive(Debug)]
 pub struct Report {
@@ -21,34 +24,40 @@ pub struct Report {
     network_layer_protocols: HashSet<String>,
     link_layer_info: HashSet<String>,
     icmp_info: HashSet<String>,
+    dns_info: HashSet<String>
 }
 
+
 impl Report {
-    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_string: String) -> Report {
+    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_string: String, dns_string: String) -> Report {
+
         let mut t_set = HashSet::new();
         let mut n_set = HashSet::new();
         let mut l_set = HashSet::new();
         let mut icmp_set = HashSet::new();
+        let mut dns_set = HashSet::new();
         t_set.insert(tlp);
         n_set.insert(nlp);
         l_set.insert(llp);
-        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, link_layer_info: l_set, icmp_info: icmp_set}
+        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, link_layer_info: l_set, icmp_info: icmp_set, dns_info: dns_set}
     }
 
 
-    pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_inf: String) {
+    pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_inf: String, dns_inf: String) {
+
         self.last_ts = ts;
         self.total_bytes += bytes;
         self.transport_layer_protocols.insert(tlp);
         self.network_layer_protocols.insert(nlp);
         self.link_layer_info.insert(llp);
         self.icmp_info.insert(icmp_inf);
+        self.dns_info.insert(dns_inf);
     }
 
 }
 
 
-#[derive(Debug, Hash)]
+#[derive(Debug)]
 pub struct AddressPortPair {
     pub first_pair: (String, String),
     pub second_pair: (String, String)
@@ -73,7 +82,22 @@ impl PartialEq for AddressPortPair {
     }
 }
 
-impl Eq for AddressPortPair {}
+impl Eq for AddressPortPair{}
+
+impl Hash for AddressPortPair{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        let a1 = &self.first_pair.0;
+        let p1 = &self.first_pair.1;
+        let a2 = &self.second_pair.0;
+        let p2 = &self.second_pair.1;
+        let s = format!("{}{}{}{}",a1,p1,a2,p2);
+        let mut l: Vec<char> = s.chars().collect();
+        l.sort_unstable();
+        let j: String = l.into_iter().collect();
+        j.hash(state)
+    }
+}
+
 
 
 impl AddressPortPair {
@@ -89,7 +113,7 @@ pub struct TransportInfo {
     pub protocol: String,
     pub source_port: Option<String>,
     pub destination_port: Option<String>,
-    pub icmp_type: Option<String>
+    pub icmp_type: Option<String>,
 }
 
 
@@ -183,7 +207,6 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
     None
 }
 
-
 #[derive(Debug)]
 pub struct LinkInfo {
     pub source_mac: [u8; 6],
@@ -242,13 +265,14 @@ pub struct DnsInfo {
     pub id: u16,
     pub opcode: simple_dns::OPCODE,
     pub response_code: simple_dns::RCODE,
-    pub queries: Vec<String>
+    pub queries: Vec<String>,
+    pub responses : Vec<String>
 }
 
 pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
-                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect()});
+                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(), responses:dns.answers.iter().map(|q| q.name.to_string()).collect() });
     }
     None
 }
