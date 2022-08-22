@@ -10,6 +10,7 @@ fn main() {
     let mut p = PacketCatcher::new();
     //Fare filtri manualmente perché pcap non funzionano
     p.capture("en0", "rslts", 2, None);
+    //PacketCatcher::parse_network_adapter();
     thread::sleep(Duration::from_secs(15));
     p.switch(true);
     println!("qui");
