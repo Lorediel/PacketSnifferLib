@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
 use etherparse::{Icmpv4Type, Icmpv6Type, InternetSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
@@ -37,7 +38,7 @@ impl Report {
 }
 
 
-#[derive(Debug, Hash)]
+#[derive(Debug)]
 pub struct AddressPortPair {
     pub first_pair: (String, String),
     pub second_pair: (String, String)
@@ -62,7 +63,22 @@ impl PartialEq for AddressPortPair {
     }
 }
 
-impl Eq for AddressPortPair {}
+impl Eq for AddressPortPair{}
+
+impl Hash for AddressPortPair{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        let a1 = &self.first_pair.0;
+        let p1 = &self.first_pair.1;
+        let a2 = &self.second_pair.0;
+        let p2 = &self.second_pair.1;
+        let s = format!("{}{}{}{}",a1,p1,a2,p2);
+        let mut l: Vec<char> = s.chars().collect();
+        l.sort_unstable();
+        let j: String = l.into_iter().collect();
+        j.hash(state)
+    }
+}
+
 
 
 impl AddressPortPair {
