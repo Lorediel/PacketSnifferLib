@@ -56,8 +56,6 @@ impl Filter {
             None => {}
         }
 
-
-
     }
 }
 

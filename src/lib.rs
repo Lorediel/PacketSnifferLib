@@ -47,7 +47,7 @@ impl PacketCatcher {
         //Applica il filtro nel caso ci sia, altrimenti non fare nulla
         match filter {
             Some(filter) => {
-                cap.filter(filter, true);
+                cap.filter(filter, false).unwrap();
             }
             None => {}
         }
@@ -72,7 +72,6 @@ impl PacketCatcher {
                         .unwrap();
                 }
                 let x = cap.next();
-
                 let packet = x.unwrap();
                 //self.tx.send(packet);
 

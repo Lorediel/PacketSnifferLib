@@ -14,12 +14,12 @@ use crate::filter::Filter;
 mod filter;
 
 fn main() {
-    let mut f = Filter::new(Some("ciao".to_string()), None, None, None, None, None, None, None);
-    f.parse_filter();
-    /*
+    //let mut f = Filter::new(Some("ciao".to_string()), None, None, None, None, None, None, None);
+    //f.parse_filter();
+
     let mut p = PacketCatcher::new();
     //Fare filtri manualmente perché pcap non funzionano
-    p.capture("en0", "rslts", 2, Some("adgsbjhd"));
+    p.capture("en0", "rslts", 2, Some("ip6"));
     //PacketCatcher::parse_network_adapter();
     thread::sleep(Duration::from_secs(15));
     p.switch(true);
@@ -27,7 +27,6 @@ fn main() {
     p.empty_report();
     p.h.unwrap().join();
 
-     */
     //println!("{:?}", Device::list().unwrap());
 
     thread::sleep(Duration::from_secs(100));
