@@ -126,18 +126,36 @@ impl PacketCatcher {
                                 },
                                 Ok(value1) => {
                                     let application_level =  parse_dns(Some(value1));
+
                                     dns_string.push_str("Id: " );
                                     dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
+
                                     let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
                                     dns_string.push_str("; Opcode: ");
                                     dns_string.push_str(opcode.as_str());
+
                                     let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
                                     dns_string.push_str("; Response code: ");
                                     dns_string.push_str(response_code.as_str());
+
                                     dns_string.push_str("; Questions name: " );
                                     dns_string.push_str( application_level.as_ref().unwrap().queries.concat().as_str());
+
+                                    dns_string.push_str("; Questions type: " );
+                                    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
+                                    dns_string.push_str(query_type.as_str());
+
+                                    dns_string.push_str("; Questions class: " );
+                                    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
+                                    dns_string.push_str(query_class.as_str());
+
                                     dns_string.push_str("; Responses name: " );
                                     dns_string.push_str( application_level.as_ref().unwrap().responses.concat().as_str());
+
+                                    dns_string.push_str("; Responses class: " );
+                                    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
+                                    dns_string.push_str(response_class.as_str());
+
                                 }
                             }
                         }

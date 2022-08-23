@@ -14,6 +14,9 @@ use std::str;
 use hex::encode;
 use tls_parser::nom::HexDisplay;
 use std::fmt;
+use dns_message_parser::question::{QClass, QType};
+use simple_dns::{CLASS, QCLASS, QTYPE};
+use simple_dns::rdata::RData;
 
 #[derive(Debug)]
 pub struct Report {
@@ -266,13 +269,25 @@ pub struct DnsInfo {
     pub opcode: simple_dns::OPCODE,
     pub response_code: simple_dns::RCODE,
     pub queries: Vec<String>,
-    pub responses : Vec<String>
+    pub query_type : Vec<QTYPE> ,
+    pub query_class : Vec<QCLASS>,
+    pub responses : Vec<String>,
+    pub response_class : Vec<CLASS>
 }
 
 pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
-                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(), responses:dns.answers.iter().map(|q| q.name.to_string()).collect() });
+                return Some(DnsInfo{
+                    id: dns.header.id,
+                    opcode: dns.header.opcode,
+                    response_code: dns.header.response_code,
+                    queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(),
+                    query_type : dns.questions.iter().map(|q| q.qtype).collect(),
+                    query_class : dns.questions.iter().map(|q| q.qclass).collect(),
+                    responses:dns.answers.iter().map(|q| q.name.to_string()).collect(),
+                    response_class :dns.answers.iter().map(|q| q.class).collect(),
+                });
     }
     None
 }
