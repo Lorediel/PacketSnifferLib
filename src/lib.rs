@@ -21,13 +21,14 @@ use std::time::Duration;
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
     report_map: Arc< Mutex<HashMap<AddressPortPair, Report>>>,
+    stop: Arc<Mutex<bool>>,
     pub h: Option<JoinHandle<()>>
 }
 impl PacketCatcher {
 
     pub fn new() -> PacketCatcher {
         let mut report_map = Arc::new(Mutex::new(HashMap::new()));
-        PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, h: None}
+        PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, stop: Arc::new(Mutex::new(false)), h: None}
     }
 
     pub fn capture(
@@ -54,37 +55,57 @@ impl PacketCatcher {
 
         let is_blocked = Arc::clone(&self.cv_m);
         let mut arc_map = Arc::clone(&self.report_map);
+        let mut stop_capture = Arc::clone(&self.stop);
         let h = thread::spawn(move || {
             let mut i = 0;
-            while let Ok(packet) = cap.next() {
-                let (cvar, lock) = &*is_blocked;
 
-                let mut is_b = lock.lock().unwrap();
-                while *is_b {
-                    std::mem::drop(cap);
-                    is_b = cvar.wait(is_b).unwrap();
-                    //println!("uscito: {:?}", packet.header.ts.tv_sec.unsigned_abs());
-                    cap = Capture::from_device(device_name)
-                        .unwrap()
-                        .promisc(true)
-                        .immediate_mode(true)
-                        .open()
-                        .unwrap();
+            'outer: loop {
+                {
+                    let mut is_stopped = stop_capture.lock().unwrap();
+                    println!("{} {}","DENTRO IL LOOP", *is_stopped);
+                    if *is_stopped {
+                        println!("PRIMA DEL BREAK");
+                        break 'outer;
+                    }
                 }
-                let x = cap.next();
+                match cap.next() {
+                    Ok(packet) => {
+                        let (cvar, lock) = &*is_blocked;
 
-                let packet = x.unwrap();
-                //self.tx.send(packet);
+                        let mut is_b = lock.lock().unwrap();
+                        while *is_b {
+                            std::mem::drop(cap);
+                            is_b = cvar.wait(is_b).unwrap();
+                            //println!("uscito: {:?}", packet.header.ts.tv_sec.unsigned_abs());
+                            cap = Capture::from_device(device_name)
+                                .unwrap()
+                                .promisc(true)
+                                .immediate_mode(true)
+                                .open()
+                                .unwrap();
 
-                let mut map = arc_map.lock().unwrap();
-                parse_packet(packet, &mut map);
-                i+=1;
-                //println!("new packet {}", i);
-                /*
-                for (key, value) in map.iter() {
-                    println!("{:?}, {:?}", key, value);
-                }*/
+                        }
+
+                        let x = cap.next();
+                        let packet = x.unwrap();
+
+                        //self.tx.send(packet);
+
+                        let mut map = arc_map.lock().unwrap();
+                        parse_packet(packet, &mut map);
+                        i+=1;
+                        //println!("new packet {}", i);
+
+                        for (key, value) in map.iter() {
+                            println!("{:?}, {:?}", key, value);
+                        }
+                    },
+                    _ => {}
+                }
             }
+
+            println!("{}", "THREAD TERMINATO CORRETTAMENTE");
+
         });
 
         self.h = Some(h);
@@ -211,14 +232,13 @@ impl PacketCatcher {
         cvar.notify_one();
     }
 
-  /*  pub fn stop_capture(&mut self, val:bool){
-        let cv_m = Arc::clone(&self.cv_m);
-        let (cvar, lock)= &*cv_m;
-        let mut stop= lock.lock().unwrap();
-        thread::sleep(Duration::from_millis(500));
-        cvar.notify_one();
+    pub fn stop_capture(&mut self){
+
+        let mut stop_capture = Arc::clone(&self.stop);
+        let mut is_stopped = stop_capture.lock().unwrap();
+        *is_stopped = true;
     }
-    */
+
 
 
     pub fn empty_report(&mut self){
@@ -236,13 +256,13 @@ impl PacketCatcher {
 
     pub fn parse_network_adapter() {
         let list = Device::list().unwrap();
-        println!("{:?}", list);
+        //println!("{:?}", list);
         for (pos, d) in list.into_iter().enumerate() {
             let mut name = "".to_owned();
             name.push_str(&(pos+1).to_string());
             name.push_str(&") ");
             name.push_str(&d.name);
-            println!("{}", name);
+            println!("{}", name.replace("\\", "\\\\"));
             let mut s1: String = "       -Description: ".to_owned();
             let s2: String = "       -Addresses: ".to_owned();
             let s3 = d.desc;
