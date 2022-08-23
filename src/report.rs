@@ -15,6 +15,7 @@ use hex::encode;
 use tls_parser::nom::HexDisplay;
 use std::fmt;
 use dns_message_parser::question::{QClass, QType};
+//use mac_address::MacAddress;
 use simple_dns::{CLASS, QCLASS, QTYPE};
 use simple_dns::rdata::RData;
 
@@ -28,6 +29,17 @@ pub struct Report {
     link_layer_info: HashSet<String>,
     icmp_info: HashSet<String>,
     dns_info: HashSet<String>
+}
+
+pub struct MacAddress {
+    bytes: [u8; 6],
+}
+
+impl MacAddress {
+    /// Creates a new `MacAddress` struct from the given bytes.
+    pub fn new(bytes: [u8; 6]) -> MacAddress {
+        MacAddress { bytes }
+    }
 }
 
 
@@ -229,30 +241,39 @@ pub fn parse_link(link_value: Option<LinkSlice>) -> Option<LinkInfo> {
     None
 }
 
+pub fn mac_address_to_string(mac: MacAddress) -> String{
+    format!("{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}", mac.bytes[0], mac.bytes[1],mac.bytes[2],mac.bytes[3],mac.bytes[4],mac.bytes[5])
+}
+
 pub fn linkinfo_tostring(li: LinkInfo) -> String {
     let mut s = "".to_owned();
     let smac = li.source_mac;
+    let smacc = MacAddress::new(smac);
     let dmac = li.destination_mac;
+    let dmacc = MacAddress::new(dmac);
     let mut sstring = "".to_owned();
     let mut dstring = "".to_owned();
 
     let mut i = 0;
     let mut y = 0;
 
-    while i < smac.len() {
+   /* while i < smac.len() {
         sstring.push_str(&smac[i].to_string());
         if (i != smac.len() - 1) {
             sstring.push_str(&":");
         }
         i+=1;
-    }
-    while y < dmac.len() {
+    }*/
+    sstring.push_str(&mac_address_to_string(smacc));
+    dstring.push_str(&mac_address_to_string(dmacc));
+
+    /*while y < dmac.len() {
         dstring.push_str(&dmac[y].to_string());
         if (y != dmac.len() - 1) {
             dstring.push_str(&":");
         }
         y+=1;
-    }
+    }*/
 
     s.push_str(&"source mac: ");
     s.push_str(&sstring);
