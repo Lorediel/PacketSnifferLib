@@ -3,12 +3,20 @@ use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
 use dns_parser::Question;
-use etherparse::{Icmpv4Type, Icmpv6Type, InternetSlice, TransportSlice};
+use etherparse::{Icmpv4Type, Icmpv6Type, InternetSlice, LinkSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
 use etherparse::Icmpv6Type::*;
 use etherparse::Icmpv4Type::*;
+use etherparse::LinkSlice::Ethernet2;
 use pcap::Packet;
+use std::str;
+use hex::encode;
+use tls_parser::nom::HexDisplay;
+use std::fmt;
+use dns_message_parser::question::{QClass, QType};
+use simple_dns::{CLASS, QCLASS, QTYPE};
+use simple_dns::rdata::RData;
 
 #[derive(Debug)]
 pub struct Report {
@@ -17,26 +25,36 @@ pub struct Report {
     total_bytes: u32,
     transport_layer_protocols: HashSet<String>,
     network_layer_protocols: HashSet<String>,
-    icmp_info: HashSet<String>
+    link_layer_info: HashSet<String>,
+    icmp_info: HashSet<String>,
+    dns_info: HashSet<String>
 }
 
+
 impl Report {
-    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, icmp_string: String) -> Report {
+    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_string: String, dns_string: String) -> Report {
+
         let mut t_set = HashSet::new();
         let mut n_set = HashSet::new();
+        let mut l_set = HashSet::new();
         let mut icmp_set = HashSet::new();
+        let mut dns_set = HashSet::new();
         t_set.insert(tlp);
         n_set.insert(nlp);
-        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, icmp_info: icmp_set}
+        l_set.insert(llp);
+        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, link_layer_info: l_set, icmp_info: icmp_set, dns_info: dns_set}
     }
 
 
-    pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, icmp_inf: String) {
+    pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_inf: String, dns_inf: String) {
+
         self.last_ts = ts;
         self.total_bytes += bytes;
         self.transport_layer_protocols.insert(tlp);
         self.network_layer_protocols.insert(nlp);
+        self.link_layer_info.insert(llp);
         self.icmp_info.insert(icmp_inf);
+        self.dns_info.insert(dns_inf);
     }
 
 }
@@ -98,8 +116,9 @@ pub struct TransportInfo {
     pub protocol: String,
     pub source_port: Option<String>,
     pub destination_port: Option<String>,
-    pub icmp_type: Option<String>
+    pub icmp_type: Option<String>,
 }
+
 
 pub fn icmpv6_type_parser(icmp_type: Option<Icmpv6Type>) -> Option<String>{
     if icmp_type.is_none() {
@@ -192,17 +211,83 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
 }
 
 #[derive(Debug)]
+pub struct LinkInfo {
+    pub source_mac: [u8; 6],
+    pub destination_mac: [u8; 6],
+    pub ether_type: String
+}
+
+pub fn parse_link(link_value: Option<LinkSlice>) -> Option<LinkInfo> {
+    if link_value.is_some() {
+        match link_value.unwrap() {
+            Ethernet2(header) => {
+                return Some(LinkInfo{source_mac: header.source(), destination_mac: header.destination(), ether_type: header.ether_type().to_string()});
+            }
+
+        }
+    }
+    None
+}
+
+pub fn linkinfo_tostring(li: LinkInfo) -> String {
+    let mut s = "".to_owned();
+    let smac = li.source_mac;
+    let dmac = li.destination_mac;
+    let mut sstring = "".to_owned();
+    let mut dstring = "".to_owned();
+
+    let mut i = 0;
+    let mut y = 0;
+
+    while i < smac.len() {
+        sstring.push_str(&smac[i].to_string());
+        if (i != smac.len() - 1) {
+            sstring.push_str(&":");
+        }
+        i+=1;
+    }
+    while y < dmac.len() {
+        dstring.push_str(&dmac[y].to_string());
+        if (y != dmac.len() - 1) {
+            dstring.push_str(&":");
+        }
+        y+=1;
+    }
+
+    s.push_str(&"source mac: ");
+    s.push_str(&sstring);
+    s.push_str(&", destination mac: ");
+    s.push_str(&dstring);
+    s.push_str(&", ether type: ");
+    s.push_str(&li.ether_type);
+    s
+}
+
+#[derive(Debug)]
 pub struct DnsInfo {
     pub id: u16,
     pub opcode: simple_dns::OPCODE,
     pub response_code: simple_dns::RCODE,
-    pub queries: Vec<String>
+    pub queries: Vec<String>,
+    pub query_type : Vec<QTYPE> ,
+    pub query_class : Vec<QCLASS>,
+    pub responses : Vec<String>,
+    pub response_class : Vec<CLASS>
 }
 
 pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
-                return Some(DnsInfo{id: dns.header.id, opcode: dns.header.opcode, response_code: dns.header.response_code, queries : dns.questions.iter().map(|q| q.qname.to_string()).collect()});
+                return Some(DnsInfo{
+                    id: dns.header.id,
+                    opcode: dns.header.opcode,
+                    response_code: dns.header.response_code,
+                    queries : dns.questions.iter().map(|q| q.qname.to_string()).collect(),
+                    query_type : dns.questions.iter().map(|q| q.qtype).collect(),
+                    query_class : dns.questions.iter().map(|q| q.qclass).collect(),
+                    responses:dns.answers.iter().map(|q| q.name.to_string()).collect(),
+                    response_class :dns.answers.iter().map(|q| q.class).collect(),
+                });
     }
     None
 }

@@ -29,7 +29,7 @@ fn main() {
 
      */
     //println!("{:?}", Device::list().unwrap());
-    //thread::sleep(Duration::from_secs(100));
 
+    thread::sleep(Duration::from_secs(100));
 
 }

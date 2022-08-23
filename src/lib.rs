@@ -1,11 +1,12 @@
 mod report;
 
+use std::borrow::Borrow;
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp, Unknown};
 use etherparse::{InternetSlice, SlicedPacket, TransportSlice};
 use pcap::{Active, Capture, Device, Inactive, Packet};
 use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, format, Formatter};
 use std::path::Path;
 use std::sync::{Arc, Condvar, Mutex};
 use std::sync::mpsc::{channel, Receiver, Sender};
@@ -14,6 +15,7 @@ use std::thread::JoinHandle;
 //use dns_message_parser::EncodeError::String;
 use std::string::String;
 use report::*;
+use std::time::Duration;
 
 
 pub struct PacketCatcher{
@@ -95,10 +97,15 @@ impl PacketCatcher {
                 Ok(value) => {
                     let transport_level = parse_transport(value.transport);
                     let network_level = parse_network(value.ip);
+                    let link_level = parse_link(value.link);
+                    let mut dns_string = "".to_owned();
 
-                    if transport_level.is_some() && network_level.is_some() {
+                    if transport_level.is_some() && network_level.is_some() && link_level.is_some() {
+
+
                         let tl = transport_level.unwrap();
                         let nl = network_level.unwrap();
+                        let ll = link_level.unwrap();
                         let first_port = match tl.source_port {
                             Some(port) => port,
                             None => "No port".to_string()
@@ -112,12 +119,43 @@ impl PacketCatcher {
                         if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
                             match simple_dns::Packet::parse(&value.payload){
                                 Err(value1) => {
+
                                     if value1.to_string() != "Provided QType is invalid: 65" {
                                         println!("{:?}", value1.to_string())
                                     }
                                 },
                                 Ok(value1) => {
-                                    let dns_info = parse_dns(Some(value1));
+                                    let application_level =  parse_dns(Some(value1));
+
+                                    dns_string.push_str("Id: " );
+                                    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
+
+                                    let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
+                                    dns_string.push_str("; Opcode: ");
+                                    dns_string.push_str(opcode.as_str());
+
+                                    let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
+                                    dns_string.push_str("; Response code: ");
+                                    dns_string.push_str(response_code.as_str());
+
+                                    dns_string.push_str("; Questions name: " );
+                                    dns_string.push_str( application_level.as_ref().unwrap().queries.concat().as_str());
+
+                                    dns_string.push_str("; Questions type: " );
+                                    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
+                                    dns_string.push_str(query_type.as_str());
+
+                                    dns_string.push_str("; Questions class: " );
+                                    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
+                                    dns_string.push_str(query_class.as_str());
+
+                                    dns_string.push_str("; Responses name: " );
+                                    dns_string.push_str( application_level.as_ref().unwrap().responses.concat().as_str());
+
+                                    dns_string.push_str("; Responses class: " );
+                                    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
+                                    dns_string.push_str(response_class.as_str());
+
                                 }
                             }
                         }
@@ -128,11 +166,13 @@ impl PacketCatcher {
                             nl.destination_address,
                             second_port,
                         );
+
                         let mut icmp_string = match tl.icmp_type {
                             Some(icmp) => icmp,
                             None => "".to_string()
                         };
 
+                        let link_string = linkinfo_tostring(ll);
 
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
@@ -141,21 +181,24 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
-                            icmp_string.clone()
+                            link_string.clone(),
+                            icmp_string.clone(),
+                            dns_string.clone().to_string()
+
                         ));
                         this_entry.update_report(
                             ts.tv_sec.unsigned_abs().into(),
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
-                            icmp_string.clone()
+                            link_string.clone(),
+                            icmp_string.clone(),
+                            dns_string.clone().to_string()
+
                         );
                     }
                 }
             }
-
-
-
 
         }
     }
@@ -167,6 +210,16 @@ impl PacketCatcher {
         *is_b = val;
         cvar.notify_one();
     }
+
+  /*  pub fn stop_capture(&mut self, val:bool){
+        let cv_m = Arc::clone(&self.cv_m);
+        let (cvar, lock)= &*cv_m;
+        let mut stop= lock.lock().unwrap();
+        thread::sleep(Duration::from_millis(500));
+        cvar.notify_one();
+    }
+    */
+
 
     pub fn empty_report(&mut self){
 
@@ -218,5 +271,16 @@ impl PacketCatcher {
 
 /*pub fn filter(filter: String){
 
+            let mut i = 0;
+            while ( i<d.addresses.len() ) {
+                println!("{:?}", d.addresses[i]);
+                if ( i != d.addresses.len() - 1 ){
+                    print!("                    ");
+                }
+                i+=1;
+            }
+            println!(" ");
+        }
+    }
 
 }*/
