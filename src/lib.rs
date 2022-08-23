@@ -16,6 +16,7 @@ use std::thread::JoinHandle;
 use std::string::String;
 use report::*;
 use std::time::Duration;
+use tls_parser::nom::bytes::complete::tag;
 
 
 pub struct PacketCatcher{
@@ -58,47 +59,42 @@ impl PacketCatcher {
         let mut stop_capture = Arc::clone(&self.stop);
         let h = thread::spawn(move || {
             let mut i = 0;
-
+            let mut tag = false;
             'outer: loop {
                 {
                     let mut is_stopped = stop_capture.lock().unwrap();
-                    println!("{} {}","DENTRO IL LOOP", *is_stopped);
+
                     if *is_stopped {
-                        println!("PRIMA DEL BREAK");
                         break 'outer;
                     }
                 }
-                match cap.next() {
+                {
+                    let (cvar, lock) = &*is_blocked;
+                    let mut is_b = lock.lock().unwrap();
+                    while *is_b {
+                        is_b = cvar.wait(is_b).unwrap();
+                        std::mem::drop(cap);
+                        cap = Capture::from_device(device_name)
+                            .unwrap()
+                            .promisc(true)
+                            .immediate_mode(true)
+                            .open()
+                            .unwrap();
+                    }
+                }
+                match cap.next_packet() {
                     Ok(packet) => {
-                        let (cvar, lock) = &*is_blocked;
-
-                        let mut is_b = lock.lock().unwrap();
-                        while *is_b {
-                            std::mem::drop(cap);
-                            is_b = cvar.wait(is_b).unwrap();
-                            //println!("uscito: {:?}", packet.header.ts.tv_sec.unsigned_abs());
-                            cap = Capture::from_device(device_name)
-                                .unwrap()
-                                .promisc(true)
-                                .immediate_mode(true)
-                                .open()
-                                .unwrap();
-
-                        }
-
-                        let x = cap.next();
-                        let packet = x.unwrap();
-
-                        //self.tx.send(packet);
 
                         let mut map = arc_map.lock().unwrap();
+                        println!("{}", packet.header.ts.tv_sec.unsigned_abs());
                         parse_packet(packet, &mut map);
                         i+=1;
-                        //println!("new packet {}", i);
 
+                        //println!("new packet {}", i);
+                        /*
                         for (key, value) in map.iter() {
                             println!("{:?}, {:?}", key, value);
-                        }
+                        }*/
                     },
                     _ => {}
                 }
@@ -237,6 +233,10 @@ impl PacketCatcher {
         let mut stop_capture = Arc::clone(&self.stop);
         let mut is_stopped = stop_capture.lock().unwrap();
         *is_stopped = true;
+        let is_blocked = Arc::clone(&self.cv_m);
+        let (cvar, lock) = &*is_blocked;
+        let mut is_b = lock.lock().unwrap();
+        *is_b = false;
     }
 
 
