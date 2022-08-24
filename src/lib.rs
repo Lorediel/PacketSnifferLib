@@ -8,10 +8,8 @@ use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::thread::JoinHandle;
-//use dns_message_parser::EncodeError::String;
 use std::string::String;
 use report::*;
-
 
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
@@ -128,7 +126,6 @@ impl PacketCatcher {
                         if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
                             match simple_dns::Packet::parse(&value.payload){
                                 Err(value1) => {
-
                                     if value1.to_string() != "Provided QType is invalid: 65" {
                                         println!("{:?}", value1.to_string())
                                     }
@@ -136,35 +133,7 @@ impl PacketCatcher {
                                 Ok(value1) => {
                                     let application_level =  parse_dns(Some(value1));
 
-                                    dns_string.push_str("Id: " );
-                                    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
-
-                                    let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
-                                    dns_string.push_str("; Opcode: ");
-                                    dns_string.push_str(opcode.as_str());
-
-                                    let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
-                                    dns_string.push_str("; Response code: ");
-                                    dns_string.push_str(response_code.as_str());
-
-                                    dns_string.push_str("; Questions name: " );
-                                    dns_string.push_str( application_level.as_ref().unwrap().queries.concat().as_str());
-
-                                    dns_string.push_str("; Questions type: " );
-                                    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
-                                    dns_string.push_str(query_type.as_str());
-
-                                    dns_string.push_str("; Questions class: " );
-                                    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
-                                    dns_string.push_str(query_class.as_str());
-
-                                    dns_string.push_str("; Responses name: " );
-                                    dns_string.push_str( application_level.as_ref().unwrap().responses.concat().as_str());
-
-                                    dns_string.push_str("; Responses class: " );
-                                    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
-                                    dns_string.push_str(response_class.as_str());
-
+                                    dns_string = dns_info_to_string( application_level);
                                 }
                             }
                         }
@@ -204,12 +173,9 @@ impl PacketCatcher {
                             icmp_string.clone(),
                             dns_string.clone().to_string()
                         );
-
-
                     }
                 }
             }
-
         }
     }
 
@@ -247,7 +213,7 @@ impl PacketCatcher {
 
     pub fn parse_network_adapter() {
         let list = Device::list().unwrap();
-        //println!("{:?}", list);
+
         for (pos, d) in list.into_iter().enumerate() {
             let mut name = "".to_owned();
             name.push_str(&(pos+1).to_string());

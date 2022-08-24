@@ -207,6 +207,7 @@ pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<Transp
     }
     None
 }
+
 #[derive(Debug)]
 pub struct NetworkInfo {
     pub protocol: String,
@@ -303,6 +304,45 @@ pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     None
 }
 
+pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
+
+    let mut dns_string="".to_owned();
+
+    dns_string.push_str("Id: " );
+    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
+
+    let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
+    dns_string.push_str("; Opcode: ");
+    dns_string.push_str(opcode.as_str());
+
+    let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
+    dns_string.push_str("; Response code: ");
+    dns_string.push_str(response_code.as_str());
+
+    dns_string.push_str("; Questions name: " );
+    for x in application_level.as_ref().unwrap().queries.iter(){
+        dns_string.push_str( x.as_str());
+    }
+
+    dns_string.push_str("; Questions type: " );
+    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
+    dns_string.push_str(query_type.as_str());
+
+    dns_string.push_str("; Questions class: " );
+    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
+    dns_string.push_str(query_class.as_str());
+
+    dns_string.push_str("; Responses name: " );
+    for x in application_level.as_ref().unwrap().responses.iter(){
+        dns_string.push_str( x.as_str());
+    }
+    dns_string.push_str("; Responses class: " );
+    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
+    dns_string.push_str(response_class.as_str());
+
+    dns_string
+}
+
 pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
 
 
@@ -326,12 +366,6 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write");
     }*/
-
-
-
-//    serde_json::to_writer(file, &serialized);
-
-
 }
 
 pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
@@ -340,7 +374,6 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
 
     string_report.push_str("-----Packet info-----");
     string_report.push( '\n');
-
 
     string_report.push_str("First pair: ");
     string_report.push_str(report.0.first_pair.0.as_str());
@@ -366,11 +399,9 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     string_report.push_str(report.1.total_bytes.to_string().as_str());
     string_report.push( '\n');
 
-
     string_report.push_str("Transport layer protocol: ");
     string_report.push_str((report.1.transport_layer_protocols.to_string()).as_str());
     string_report.push_str("\n");
-
 
     string_report.push_str("Network layer protocol: ");
     string_report.push_str((report.1.network_layer_protocols.to_string()).as_str());
@@ -391,10 +422,8 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     string_report.push_str((report.1.dns_info.to_string()).as_str());
     string_report.push_str("; \n");
 
-
     string_report.push( '\n');
     string_report.push( '\n');
-
 
     string_report
 
