@@ -1,22 +1,16 @@
 mod report;
 
-use std::borrow::Borrow;
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp, Unknown};
-use etherparse::{InternetSlice, SlicedPacket, TransportSlice};
-use pcap::{Active, Capture, Device, Inactive, Packet};
+use etherparse::{SlicedPacket};
+use pcap::{Capture, Device, Packet};
 use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, format, Formatter};
-use std::path::Path;
 use std::sync::{Arc, Condvar, Mutex};
-use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::thread::JoinHandle;
 //use dns_message_parser::EncodeError::String;
 use std::string::String;
 use report::*;
-use std::time::Duration;
-use tls_parser::nom::bytes::complete::tag;
 
 
 pub struct PacketCatcher{
@@ -28,7 +22,7 @@ pub struct PacketCatcher{
 impl PacketCatcher {
 
     pub fn new() -> PacketCatcher {
-        let mut report_map = Arc::new(Mutex::new(HashMap::new()));
+        let report_map = Arc::new(Mutex::new(HashMap::new()));
         PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, stop: Arc::new(Mutex::new(false)), h: None}
     }
 
@@ -55,14 +49,13 @@ impl PacketCatcher {
         }
 
         let is_blocked = Arc::clone(&self.cv_m);
-        let mut arc_map = Arc::clone(&self.report_map);
-        let mut stop_capture = Arc::clone(&self.stop);
+        let arc_map = Arc::clone(&self.report_map);
+        let stop_capture = Arc::clone(&self.stop);
         let h = thread::spawn(move || {
             let mut i = 0;
-            let mut tag = false;
             'outer: loop {
                 {
-                    let mut is_stopped = stop_capture.lock().unwrap();
+                    let is_stopped = stop_capture.lock().unwrap();
 
                     if *is_stopped {
                         break 'outer;
@@ -184,7 +177,7 @@ impl PacketCatcher {
                             second_port,
                         );
 
-                        let mut icmp_string = match tl.icmp_type {
+                        let icmp_string = match tl.icmp_type {
                             Some(icmp) => icmp,
                             None => "".to_string()
                         };
@@ -231,7 +224,7 @@ impl PacketCatcher {
 
     pub fn stop_capture(&mut self){
 
-        let mut stop_capture = Arc::clone(&self.stop);
+        let stop_capture = Arc::clone(&self.stop);
         let mut is_stopped = stop_capture.lock().unwrap();
         *is_stopped = true;
         let is_blocked = Arc::clone(&self.cv_m);
@@ -244,15 +237,12 @@ impl PacketCatcher {
 
     pub fn empty_report(&mut self){
 
-        let mut arc_map = Arc::clone(&self.report_map);
+        let arc_map = Arc::clone(&self.report_map);
         let mut map = arc_map.lock().unwrap();
         for (key, value) in map.iter() {
             println!("{:?}, {:?}", key, value);
         }
         map.clear();
-        for (key, value) in map.iter() {
-            println!("===");
-        }
     }
 
     pub fn parse_network_adapter() {
@@ -279,7 +269,7 @@ impl PacketCatcher {
             let mut i = 0;
             while ( i<d.addresses.len() ) {
                 println!("{:?}", d.addresses[i]);
-                if ( i != d.addresses.len() - 1 ){
+                if  i != d.addresses.len() - 1 {
                     print!("                    ");
                 }
                 i+=1;

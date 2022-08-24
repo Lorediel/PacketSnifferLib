@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 
 use std::hash::{Hash, Hasher};
 
@@ -9,28 +9,21 @@ use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
 use etherparse::Icmpv6Type::*;
 use etherparse::Icmpv4Type::*;
 use etherparse::LinkSlice::Ethernet2;
-use pcap::Packet;
-use std::{fs, str};
-use hex::encode;
-use tls_parser::nom::HexDisplay;
-use std::fmt;
-use std::fs::{File, OpenOptions};
+use std::{str};
+use std::fs::{OpenOptions};
 use std::io::{BufWriter, Write};
-use dns_message_parser::question::{QClass, QType};
-//use mac_address::MacAddress;
 use simple_dns::{CLASS, QCLASS, QTYPE};
-use simple_dns::rdata::RData;
 
 #[derive(Debug)]
 pub struct Report {
     first_ts: u64,
     last_ts: u64,
     total_bytes: u32,
-    transport_layer_protocols: HashSet<String>,
-    network_layer_protocols: HashSet<String>,
-    link_layer_info: HashSet<String>,
-    icmp_info: HashSet<String>,
-    dns_info: HashSet<String>
+    transport_layer_protocols: String,
+    network_layer_protocols: String,
+    link_layer_info: String,
+    icmp_info: String,
+    dns_info: String
 }
 
 pub struct MacAddress {
@@ -48,15 +41,15 @@ impl MacAddress {
 impl Report {
     pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_string: String, dns_string: String) -> Report {
 
-        let mut t_set = HashSet::new();
-        let mut n_set = HashSet::new();
-        let mut l_set = HashSet::new();
-        let mut icmp_set = HashSet::new();
-        let mut dns_set = HashSet::new();
-        t_set.insert(tlp);
-        n_set.insert(nlp);
-        l_set.insert(llp);
-        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, link_layer_info: l_set, icmp_info: icmp_set, dns_info: dns_set}
+        //let mut t_set = HashSet::new();
+        //let mut n_set = HashSet::new();
+        //let mut l_set = HashSet::new();
+        //let mut icmp_set = HashSet::new();
+        //let mut dns_set = HashSet::new();
+        //t_set.insert(tlp);
+        //n_set.insert(nlp);
+        //l_set.insert(llp);
+        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: tlp, network_layer_protocols: nlp, link_layer_info: llp, icmp_info: icmp_string, dns_info: dns_string}
     }
 
 
@@ -64,11 +57,11 @@ impl Report {
 
         self.last_ts = ts;
         self.total_bytes += bytes;
-        self.transport_layer_protocols.insert(tlp);
-        self.network_layer_protocols.insert(nlp);
-        self.link_layer_info.insert(llp);
-        self.icmp_info.insert(icmp_inf);
-        self.dns_info.insert(dns_inf);
+        self.transport_layer_protocols = tlp;
+        self.network_layer_protocols = nlp;
+        self.link_layer_info = llp;
+        self.icmp_info = icmp_inf;
+        self.dns_info = dns_inf;
     }
 
 }
@@ -78,11 +71,7 @@ impl Report {
 pub struct AddressPortPair {
     pub first_pair: (String, String),
     pub second_pair: (String, String)
-    /*
-    first_address: String,
-    first_port: String,
-    second_address: String,
-    second_port: String*/
+
 }
 
 impl PartialEq for AddressPortPair {
@@ -122,7 +111,7 @@ impl AddressPortPair {
         AddressPortPair{first_pair: (first_address, first_port), second_pair: (second_address, second_port)}
     }
 
-    pub fn to_string(&self) -> String{
+    /*pub fn to_string(&self) -> String{
         let mut return_string = "".to_owned();
         return_string.push_str(&"First pair: ");
         return_string.push_str(self.first_pair.0.as_str());
@@ -136,7 +125,7 @@ impl AddressPortPair {
 
         return_string
 
-    }
+    } */
 }
 
 
@@ -272,26 +261,9 @@ pub fn linkinfo_tostring(li: LinkInfo) -> String {
     let mut sstring = "".to_owned();
     let mut dstring = "".to_owned();
 
-    let mut i = 0;
-    let mut y = 0;
 
-   /* while i < smac.len() {
-        sstring.push_str(&smac[i].to_string());
-        if (i != smac.len() - 1) {
-            sstring.push_str(&":");
-        }
-        i+=1;
-    }*/
     sstring.push_str(&mac_address_to_string(smacc));
     dstring.push_str(&mac_address_to_string(dmacc));
-
-    /*while y < dmac.len() {
-        dstring.push_str(&dmac[y].to_string());
-        if (y != dmac.len() - 1) {
-            dstring.push_str(&":");
-        }
-        y+=1;
-    }*/
 
     s.push_str(&"source mac: ");
     s.push_str(&sstring);
@@ -342,11 +314,13 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
 
     let mut file = BufWriter::new(file);
 
-    let Vec = Vec::from_iter(report.iter());
+    let vec = Vec::from_iter(report.iter());
 
-    let x = Vec[Vec.len()-1];
-    let string_to_print = parse_report(x);
-    write!(file, "{}",  string_to_print).expect("unable to write");
+    //let x = Vec[Vec.len()-1];
+    for x in vec {
+        let string_to_print = parse_report(x);
+        write!(file, "{}", string_to_print).expect("unable to write");
+    }
 
 
 //    serde_json::to_writer(file, &serialized);
@@ -354,7 +328,7 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
 
 }
 
-pub fn parse_report(report : (&AddressPortPair,&Report))->String{
+pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
 
     let mut string_report = "".to_owned();
 
@@ -362,51 +336,55 @@ pub fn parse_report(report : (&AddressPortPair,&Report))->String{
     string_report.push( '\n');
 
 
-    string_report.push_str("First pair:");
+    string_report.push_str("First pair: ");
     string_report.push_str(report.0.first_pair.0.as_str());
-    string_report.push_str(";");
+    string_report.push_str("; ");
     string_report.push_str( report.0.first_pair.1.as_str());
     string_report.push( '\n');
 
-    string_report.push_str("Second pair:");
+    string_report.push_str("Second pair: ");
     string_report.push_str(report.0.second_pair.0.to_string().as_str());
-    string_report.push_str(";");
+    string_report.push_str("; ");
     string_report.push_str(report.0.second_pair.1.to_string().as_str());
     string_report.push( '\n');
 
-    string_report.push_str("First timestamp:");
+    string_report.push_str("First timestamp: ");
     string_report.push_str(report.1.first_ts.to_string().as_str());
     string_report.push( '\n');
 
-    string_report.push_str("Last timestamp:");
+    string_report.push_str("Last timestamp: ");
     string_report.push_str(report.1.last_ts.to_string().as_str());
     string_report.push( '\n');
 
-    string_report.push_str("Total bytes:");
+    string_report.push_str("Total bytes: ");
     string_report.push_str(report.1.total_bytes.to_string().as_str());
     string_report.push( '\n');
 
-    /*
-    string_report.push_str("Transport layer protocol:");
-    string_report.push_str((report.1.transport_layer_protocols.iter().map(|x| x.to_string())).as_str());
-    string_report.push_str("; \n");
 
-    string_report.push_str("Network layer protocol:");
-    string_report.push_str((report.1.network_layer_protocols.iter().map(|x| x.to_string()).collect()).as_str());
-    string_report.push_str("; \n");
+    string_report.push_str("Transport layer protocol: ");
+    string_report.push_str((report.1.transport_layer_protocols.to_string()).as_str());
+    string_report.push_str("\n");
+
+
+    string_report.push_str("Network layer protocol: ");
+    string_report.push_str((report.1.network_layer_protocols.to_string()).as_str());
+    string_report.push_str("\n");
 
     string_report.push_str("Link layer info:");
-    string_report.push_str((report.1.link_layer_info.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("\n");
+    string_report.push_str((report.1.link_layer_info.to_string()).as_str());
     string_report.push_str("; \n");
 
     string_report.push_str("Icmp info:");
-    string_report.push_str((report.1.icmp_info.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("\n");
+    string_report.push_str((report.1.icmp_info.to_string()).as_str());
     string_report.push_str("; \n");
 
     string_report.push_str("Dns info:");
-    string_report.push_str((report.1.dns_info.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("\n");
+    string_report.push_str((report.1.dns_info.to_string()).as_str());
     string_report.push_str("; \n");
-    */
+
 
     string_report.push( '\n');
     string_report.push( '\n');
