@@ -322,6 +322,7 @@ pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
     dns_string.push_str("; Questions name: " );
     for x in application_level.as_ref().unwrap().queries.iter(){
         dns_string.push_str( x.as_str());
+        dns_string.push_str(" | " );
     }
 
     dns_string.push_str("; Questions type: " );
@@ -335,6 +336,7 @@ pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
     dns_string.push_str("; Responses name: " );
     for x in application_level.as_ref().unwrap().responses.iter(){
         dns_string.push_str( x.as_str());
+        dns_string.push_str(" | " );
     }
     dns_string.push_str("; Responses class: " );
     let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
