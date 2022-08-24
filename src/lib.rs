@@ -81,8 +81,7 @@ impl PacketCatcher {
                         let mut map = arc_map.lock().unwrap();
                         parse_packet(packet, &mut map);
                         let map_to_print = &*map;
-                        i+=1;
-                        write_file( filename,  &map_to_print );
+                        //write_file( filename,  &map_to_print );
                         //println!("new packet {}", i);
                         /*
                         for (key, value) in map.iter() {
@@ -235,13 +234,14 @@ impl PacketCatcher {
 
 
 
-    pub fn empty_report(&mut self){
+    pub fn empty_report(&mut self, filename: &str){
 
         let arc_map = Arc::clone(&self.report_map);
         let mut map = arc_map.lock().unwrap();
         for (key, value) in map.iter() {
             println!("{:?}, {:?}", key, value);
         }
+        write_file(filename, &*map);
         map.clear();
     }
 

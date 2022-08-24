@@ -21,7 +21,7 @@ fn main() {
 
 
     p.switch(true);
-    p.empty_report();
+    p.empty_report("C:\\Users\\david\\Desktop\\prova.txt");
 
     p.stop_capture();
     p.h.unwrap().join();

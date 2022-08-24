@@ -316,11 +316,17 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
 
     let vec = Vec::from_iter(report.iter());
 
-    //let x = Vec[Vec.len()-1];
+
     for x in vec {
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write");
     }
+    /*if vec.len() != 0 {
+        let x = vec[vec.len()-1];
+        let string_to_print = parse_report(x);
+        write!(file, "{}", string_to_print).expect("unable to write");
+    }*/
+
 
 
 //    serde_json::to_writer(file, &serialized);
