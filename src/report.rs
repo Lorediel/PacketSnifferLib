@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use std::hash::{Hash, Hasher};
 
@@ -10,10 +10,12 @@ use etherparse::Icmpv6Type::*;
 use etherparse::Icmpv4Type::*;
 use etherparse::LinkSlice::Ethernet2;
 use pcap::Packet;
-use std::str;
+use std::{fs, str};
 use hex::encode;
 use tls_parser::nom::HexDisplay;
 use std::fmt;
+use std::fs::{File, OpenOptions};
+use std::io::{BufWriter, Write};
 use dns_message_parser::question::{QClass, QType};
 //use mac_address::MacAddress;
 use simple_dns::{CLASS, QCLASS, QTYPE};
@@ -118,6 +120,22 @@ impl Hash for AddressPortPair{
 impl AddressPortPair {
     pub fn new(first_address: String, first_port: String, second_address: String, second_port: String) -> AddressPortPair {
         AddressPortPair{first_pair: (first_address, first_port), second_pair: (second_address, second_port)}
+    }
+
+    pub fn to_string(&self) -> String{
+        let mut return_string = "".to_owned();
+        return_string.push_str(&"First pair: ");
+        return_string.push_str(self.first_pair.0.as_str());
+        return_string.push_str(&", ");
+        return_string.push_str(self.first_pair.1.as_str());
+
+        return_string.push_str(&"Second pair: ");
+        return_string.push_str(self.second_pair.0.as_str());
+        return_string.push_str(&", ");
+        return_string.push_str(self.second_pair.1.as_str());
+
+        return_string
+
     }
 }
 
@@ -312,3 +330,89 @@ pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     }
     None
 }
+
+pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
+
+
+    let  file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(filename)
+        .expect("unable to open file");
+
+    let mut file = BufWriter::new(file);
+
+    let Vec = Vec::from_iter(report.iter());
+
+    let x = Vec[Vec.len()-1];
+    let string_to_print = parse_report(x);
+    write!(file, "{}",  string_to_print).expect("unable to write");
+
+
+//    serde_json::to_writer(file, &serialized);
+
+
+}
+
+pub fn parse_report(report : (&AddressPortPair,&Report))->String{
+
+    let mut string_report = "".to_owned();
+
+    string_report.push_str("-----Packet info-----");
+    string_report.push( '\n');
+
+
+    string_report.push_str("First pair:");
+    string_report.push_str(report.0.first_pair.0.as_str());
+    string_report.push_str(";");
+    string_report.push_str( report.0.first_pair.1.as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Second pair:");
+    string_report.push_str(report.0.second_pair.0.to_string().as_str());
+    string_report.push_str(";");
+    string_report.push_str(report.0.second_pair.1.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("First timestamp:");
+    string_report.push_str(report.1.first_ts.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Last timestamp:");
+    string_report.push_str(report.1.last_ts.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Total bytes:");
+    string_report.push_str(report.1.total_bytes.to_string().as_str());
+    string_report.push( '\n');
+
+    /*
+    string_report.push_str("Transport layer protocol:");
+    string_report.push_str((report.1.transport_layer_protocols.iter().map(|x| x.to_string())).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push_str("Network layer protocol:");
+    string_report.push_str((report.1.network_layer_protocols.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push_str("Link layer info:");
+    string_report.push_str((report.1.link_layer_info.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push_str("Icmp info:");
+    string_report.push_str((report.1.icmp_info.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push_str("Dns info:");
+    string_report.push_str((report.1.dns_info.iter().map(|x| x.to_string()).collect()).as_str());
+    string_report.push_str("; \n");
+    */
+
+    string_report.push( '\n');
+    string_report.push( '\n');
+
+
+    string_report
+
+}
+

@@ -35,7 +35,7 @@ impl PacketCatcher {
     pub fn capture(
         &mut self,
         device_name: &'static str,
-        filename: &str,
+        filename: &'static str,
         interval: u32,
         filter: Option<&str>,
     ) {
@@ -86,10 +86,10 @@ impl PacketCatcher {
                     Ok(packet) => {
 
                         let mut map = arc_map.lock().unwrap();
-                        println!("{}", packet.header.ts.tv_sec.unsigned_abs());
                         parse_packet(packet, &mut map);
+                        let map_to_print = &*map;
                         i+=1;
-
+                        write_file( filename,  &map_to_print );
                         //println!("new packet {}", i);
                         /*
                         for (key, value) in map.iter() {
@@ -211,8 +211,9 @@ impl PacketCatcher {
                             link_string.clone(),
                             icmp_string.clone(),
                             dns_string.clone().to_string()
-
                         );
+
+
                     }
                 }
             }

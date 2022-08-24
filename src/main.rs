@@ -20,18 +20,18 @@ fn main() {
     let mut p = PacketCatcher::new();
     //Fare filtri manualmente perché pcap non funzionano
 
-    p.capture("en0", "rslts", 2, None);
+    p.capture("en0", "/Users/alessandrogelsi/Desktop/prova.txt", 2, None);
     //PacketCatcher::parse_network_adapter();
     thread::sleep(Duration::from_secs(5));
 
+
     p.switch(true);
-    //p.empty_report();
+    p.empty_report();
+
     p.stop_capture();
     p.h.unwrap().join();
 
     //println!("{:?}", Device::list().unwrap());
-
     //thread::sleep(Duration::from_secs(100));
-
 
 }
