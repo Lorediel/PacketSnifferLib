@@ -13,6 +13,7 @@ use std::{str};
 use std::fmt::{Display, Formatter};
 use std::fs::{OpenOptions};
 use std::io::{BufWriter, Write};
+use chrono::{DateTime, Local};
 use simple_dns::{CLASS, QCLASS, QTYPE};
 
 #[derive(Debug)]
@@ -178,7 +179,7 @@ pub fn icmpv4_type_parser(icmp_type: Option<Icmpv4Type>) -> Option<String> {
         Icmpv4Type::Redirect(header) => {return Some(format!("code: {}-Redirect", header.code.code_u8()).to_string())},
         Icmpv4Type::EchoRequest(header) => {return Some("code: 0-Echo Request".to_string())},
         Icmpv4Type::TimeExceeded(code)=> {return Some(format!("code: {}-Time Exceeded", code.code_u8()).to_string())},
-        Icmpv4Type::ParameterProblem(header) => {return Some("Parameter Problem".to_string())},
+        Icmpv4Type::ParameterProblem(_) => {return Some("Parameter Problem".to_string())},
         Icmpv4Type::TimestampRequest(tsMessage) => {return Some("code: 0-Timestamp Request".to_string())},
         Icmpv4Type::TimestampReply(tsMessage) => {return Some("code: 0-Timestamp Reply".to_string())},
     };
@@ -221,10 +222,10 @@ pub struct NetworkInfo {
 pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
     if ip_value.is_some() {
         match ip_value.unwrap() {
-            Ipv4(header, extension) => {
+            Ipv4(header, _) => {
                 return Some(NetworkInfo{protocol: "IPv4".to_string(), source_address: header.source_addr().to_string(), destination_address: header.destination_addr().to_string()});
             }
-            Ipv6(header, extenion) => {
+            Ipv6(header, _) => {
                 return Some(NetworkInfo{protocol: "IPv6".to_string(), source_address: header.source_addr().to_string(), destination_address: header.destination_addr().to_string()});
             }
         }
@@ -385,14 +386,17 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
     let  file = OpenOptions::new()
         .write(true)
         .append(true)
+        .create(true)
         .open(filename)
         .expect("unable to open file");
 
     let mut file = BufWriter::new(file);
 
     let vec = Vec::from_iter(report.iter());
-
-
+    let local: DateTime<Local> = Local::now();
+    write!(file, "================================================\n");
+    write!(file, "NEW REPORT: {}\n",local);
+    write!(file, "================================================\n\n");
     for x in vec {
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write");

@@ -8,22 +8,20 @@ use crate::filter::Filter;
 mod filter;
 
 fn main() {
-    //f.parse_filter();
 
     let mut p = PacketCatcher::new();
     //Fare filtri manualmente perché pcap non funzionano
-
-    p.capture("en0", "/Users/lorenzodamico/Desktop/prova.txt", 2, None);
+    let res = p.capture("en0", "/Users/lorenzodamico/Desktop/prova.txt", 99, None);
    // p.capture("\\Device\\NPF_{434FE10D-2348-48BF-9823-09CD95698329}", "C:\\Users\\david\\Desktop\\prova.txt", 2, None);
     //PacketCatcher::parse_network_adapter();
-    thread::sleep(Duration::from_secs(10));
-
-    p.switch(true);
+    match res {
+        Ok(_) => {},
+        Err(e) => {println!("{}",e )}
+    }
     //p.empty_report("C:\\Users\\david\\Desktop\\prova.txt");
-    p.empty_report("/Users/lorenzodamico/Desktop/prova.txt");
-
+    thread::sleep(Duration::from_secs(1));
     p.stop_capture();
-    p.h.unwrap().join();
+    p.h_cap.unwrap().join();
 
     //println!("{:?}", Device::list().unwrap());
     //thread::sleep(Duration::from_secs(100));
