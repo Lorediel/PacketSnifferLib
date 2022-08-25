@@ -150,7 +150,7 @@ impl PacketCatcher {
                             None => "".to_string()
                         };
 
-                        let link_string = linkinfo_tostring(ll);
+                        //let link_string = linkinfo_tostring(ll);
 
                         let ts = packet.header.ts;
                         let bytes: u32 = packet.header.len;
@@ -159,7 +159,7 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
-                            link_string.clone(),
+                            ll.clone(),
                             icmp_string.clone(),
                             dns_string.clone().to_string()
 
@@ -169,7 +169,7 @@ impl PacketCatcher {
                             bytes,
                             tl.protocol.clone(),
                             nl.protocol.clone(),
-                            link_string.clone(),
+                            ll.clone(),
                             icmp_string.clone(),
                             dns_string.clone().to_string()
                         );

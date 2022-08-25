@@ -13,14 +13,14 @@ fn main() {
     let mut p = PacketCatcher::new();
     //Fare filtri manualmente perché pcap non funzionano
 
-    p.capture("en0", "/Users/alessandrogelsi/Desktop/prova.txt", 2, None);
+    p.capture("en0", "/Users/lorenzodamico/Desktop/prova.txt", 2, None);
    // p.capture("\\Device\\NPF_{434FE10D-2348-48BF-9823-09CD95698329}", "C:\\Users\\david\\Desktop\\prova.txt", 2, None);
     //PacketCatcher::parse_network_adapter();
     thread::sleep(Duration::from_secs(10));
 
     p.switch(true);
     //p.empty_report("C:\\Users\\david\\Desktop\\prova.txt");
-    p.empty_report("/Users/alessandrogelsi/Desktop/prova.txt");
+    p.empty_report("/Users/lorenzodamico/Desktop/prova.txt");
 
     p.stop_capture();
     p.h.unwrap().join();
