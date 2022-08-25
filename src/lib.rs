@@ -1,23 +1,15 @@
 mod report;
 
-use std::borrow::Borrow;
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp, Unknown};
-use etherparse::{InternetSlice, SlicedPacket, TransportSlice};
-use pcap::{Active, Capture, Device, Inactive, Packet};
+use etherparse::{SlicedPacket};
+use pcap::{Capture, Device, Packet};
 use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, format, Formatter};
-use std::path::Path;
 use std::sync::{Arc, Condvar, Mutex};
-use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::thread::JoinHandle;
-//use dns_message_parser::EncodeError::String;
 use std::string::String;
 use report::*;
-use std::time::Duration;
-use tls_parser::nom::bytes::complete::tag;
-
 
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
@@ -28,14 +20,14 @@ pub struct PacketCatcher{
 impl PacketCatcher {
 
     pub fn new() -> PacketCatcher {
-        let mut report_map = Arc::new(Mutex::new(HashMap::new()));
+        let report_map = Arc::new(Mutex::new(HashMap::new()));
         PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, stop: Arc::new(Mutex::new(false)), h: None}
     }
 
     pub fn capture(
         &mut self,
         device_name: &'static str,
-        filename: &str,
+        filename: &'static str,
         interval: u32,
         filter: Option<&str>,
     ) {
@@ -55,14 +47,13 @@ impl PacketCatcher {
         }
 
         let is_blocked = Arc::clone(&self.cv_m);
-        let mut arc_map = Arc::clone(&self.report_map);
-        let mut stop_capture = Arc::clone(&self.stop);
+        let arc_map = Arc::clone(&self.report_map);
+        let stop_capture = Arc::clone(&self.stop);
         let h = thread::spawn(move || {
             let mut i = 0;
-            let mut tag = false;
             'outer: loop {
                 {
-                    let mut is_stopped = stop_capture.lock().unwrap();
+                    let is_stopped = stop_capture.lock().unwrap();
 
                     if *is_stopped {
                         break 'outer;
@@ -86,10 +77,9 @@ impl PacketCatcher {
                     Ok(packet) => {
 
                         let mut map = arc_map.lock().unwrap();
-                        println!("{}", packet.header.ts.tv_sec.unsigned_abs());
                         parse_packet(packet, &mut map);
-                        i+=1;
-
+                        let map_to_print = &*map;
+                        //write_file( filename,  &map_to_print );
                         //println!("new packet {}", i);
                         /*
                         for (key, value) in map.iter() {
@@ -136,7 +126,6 @@ impl PacketCatcher {
                         if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
                             match simple_dns::Packet::parse(&value.payload){
                                 Err(value1) => {
-
                                     if value1.to_string() != "Provided QType is invalid: 65" {
                                         println!("{:?}", value1.to_string())
                                     }
@@ -144,35 +133,7 @@ impl PacketCatcher {
                                 Ok(value1) => {
                                     let application_level =  parse_dns(Some(value1));
 
-                                    dns_string.push_str("Id: " );
-                                    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
-
-                                    let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
-                                    dns_string.push_str("; Opcode: ");
-                                    dns_string.push_str(opcode.as_str());
-
-                                    let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
-                                    dns_string.push_str("; Response code: ");
-                                    dns_string.push_str(response_code.as_str());
-
-                                    dns_string.push_str("; Questions name: " );
-                                    dns_string.push_str( application_level.as_ref().unwrap().queries.concat().as_str());
-
-                                    dns_string.push_str("; Questions type: " );
-                                    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
-                                    dns_string.push_str(query_type.as_str());
-
-                                    dns_string.push_str("; Questions class: " );
-                                    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
-                                    dns_string.push_str(query_class.as_str());
-
-                                    dns_string.push_str("; Responses name: " );
-                                    dns_string.push_str( application_level.as_ref().unwrap().responses.concat().as_str());
-
-                                    dns_string.push_str("; Responses class: " );
-                                    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
-                                    dns_string.push_str(response_class.as_str());
-
+                                    dns_string = dns_info_to_string( application_level);
                                 }
                             }
                         }
@@ -184,7 +145,7 @@ impl PacketCatcher {
                             second_port,
                         );
 
-                        let mut icmp_string = match tl.icmp_type {
+                        let icmp_string = match tl.icmp_type {
                             Some(icmp) => icmp,
                             None => "".to_string()
                         };
@@ -211,12 +172,10 @@ impl PacketCatcher {
                             link_string.clone(),
                             icmp_string.clone(),
                             dns_string.clone().to_string()
-
                         );
                     }
                 }
             }
-
         }
     }
 
@@ -230,7 +189,7 @@ impl PacketCatcher {
 
     pub fn stop_capture(&mut self){
 
-        let mut stop_capture = Arc::clone(&self.stop);
+        let stop_capture = Arc::clone(&self.stop);
         let mut is_stopped = stop_capture.lock().unwrap();
         *is_stopped = true;
         let is_blocked = Arc::clone(&self.cv_m);
@@ -241,22 +200,20 @@ impl PacketCatcher {
 
 
 
-    pub fn empty_report(&mut self){
+    pub fn empty_report(&mut self, filename: &str){
 
-        let mut arc_map = Arc::clone(&self.report_map);
+        let arc_map = Arc::clone(&self.report_map);
         let mut map = arc_map.lock().unwrap();
         for (key, value) in map.iter() {
             println!("{:?}, {:?}", key, value);
         }
+        write_file(filename, &*map);
         map.clear();
-        for (key, value) in map.iter() {
-            println!("===");
-        }
     }
 
     pub fn parse_network_adapter() {
         let list = Device::list().unwrap();
-        //println!("{:?}", list);
+
         for (pos, d) in list.into_iter().enumerate() {
             let mut name = "".to_owned();
             name.push_str(&(pos+1).to_string());
@@ -278,7 +235,7 @@ impl PacketCatcher {
             let mut i = 0;
             while ( i<d.addresses.len() ) {
                 println!("{:?}", d.addresses[i]);
-                if ( i != d.addresses.len() - 1 ){
+                if  i != d.addresses.len() - 1 {
                     print!("                    ");
                 }
                 i+=1;

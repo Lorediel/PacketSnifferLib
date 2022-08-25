@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap};
 
 use std::hash::{Hash, Hasher};
 
@@ -9,40 +9,47 @@ use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
 use etherparse::Icmpv6Type::*;
 use etherparse::Icmpv4Type::*;
 use etherparse::LinkSlice::Ethernet2;
-use pcap::Packet;
-use std::str;
-use hex::encode;
-use tls_parser::nom::HexDisplay;
-use std::fmt;
-use dns_message_parser::question::{QClass, QType};
+use std::{str};
+use std::fs::{OpenOptions};
+use std::io::{BufWriter, Write};
 use simple_dns::{CLASS, QCLASS, QTYPE};
-use simple_dns::rdata::RData;
 
 #[derive(Debug)]
 pub struct Report {
     first_ts: u64,
     last_ts: u64,
     total_bytes: u32,
-    transport_layer_protocols: HashSet<String>,
-    network_layer_protocols: HashSet<String>,
-    link_layer_info: HashSet<String>,
-    icmp_info: HashSet<String>,
-    dns_info: HashSet<String>
+    transport_layer_protocols: String,
+    network_layer_protocols: String,
+    link_layer_info: String,
+    icmp_info: String,
+    dns_info: String
+}
+
+pub struct MacAddress {
+    bytes: [u8; 6],
+}
+
+impl MacAddress {
+    /// Creates a new `MacAddress` struct from the given bytes.
+    pub fn new(bytes: [u8; 6]) -> MacAddress {
+        MacAddress { bytes }
+    }
 }
 
 
 impl Report {
     pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: String, icmp_string: String, dns_string: String) -> Report {
 
-        let mut t_set = HashSet::new();
-        let mut n_set = HashSet::new();
-        let mut l_set = HashSet::new();
-        let mut icmp_set = HashSet::new();
-        let mut dns_set = HashSet::new();
-        t_set.insert(tlp);
-        n_set.insert(nlp);
-        l_set.insert(llp);
-        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: n_set, link_layer_info: l_set, icmp_info: icmp_set, dns_info: dns_set}
+        //let mut t_set = HashSet::new();
+        //let mut n_set = HashSet::new();
+        //let mut l_set = HashSet::new();
+        //let mut icmp_set = HashSet::new();
+        //let mut dns_set = HashSet::new();
+        //t_set.insert(tlp);
+        //n_set.insert(nlp);
+        //l_set.insert(llp);
+        Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: tlp, network_layer_protocols: nlp, link_layer_info: llp, icmp_info: icmp_string, dns_info: dns_string}
     }
 
 
@@ -50,11 +57,11 @@ impl Report {
 
         self.last_ts = ts;
         self.total_bytes += bytes;
-        self.transport_layer_protocols.insert(tlp);
-        self.network_layer_protocols.insert(nlp);
-        self.link_layer_info.insert(llp);
-        self.icmp_info.insert(icmp_inf);
-        self.dns_info.insert(dns_inf);
+        self.transport_layer_protocols = tlp;
+        self.network_layer_protocols = nlp;
+        self.link_layer_info = llp;
+        self.icmp_info = icmp_inf;
+        self.dns_info = dns_inf;
     }
 
 }
@@ -64,11 +71,7 @@ impl Report {
 pub struct AddressPortPair {
     pub first_pair: (String, String),
     pub second_pair: (String, String)
-    /*
-    first_address: String,
-    first_port: String,
-    second_address: String,
-    second_port: String*/
+
 }
 
 impl PartialEq for AddressPortPair {
@@ -107,6 +110,22 @@ impl AddressPortPair {
     pub fn new(first_address: String, first_port: String, second_address: String, second_port: String) -> AddressPortPair {
         AddressPortPair{first_pair: (first_address, first_port), second_pair: (second_address, second_port)}
     }
+
+    /*pub fn to_string(&self) -> String{
+        let mut return_string = "".to_owned();
+        return_string.push_str(&"First pair: ");
+        return_string.push_str(self.first_pair.0.as_str());
+        return_string.push_str(&", ");
+        return_string.push_str(self.first_pair.1.as_str());
+
+        return_string.push_str(&"Second pair: ");
+        return_string.push_str(self.second_pair.0.as_str());
+        return_string.push_str(&", ");
+        return_string.push_str(self.second_pair.1.as_str());
+
+        return_string
+
+    } */
 }
 
 
@@ -188,6 +207,7 @@ pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<Transp
     }
     None
 }
+
 #[derive(Debug)]
 pub struct NetworkInfo {
     pub protocol: String,
@@ -229,30 +249,22 @@ pub fn parse_link(link_value: Option<LinkSlice>) -> Option<LinkInfo> {
     None
 }
 
+pub fn mac_address_to_string(mac: MacAddress) -> String{
+    format!("{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}", mac.bytes[0], mac.bytes[1],mac.bytes[2],mac.bytes[3],mac.bytes[4],mac.bytes[5])
+}
+
 pub fn linkinfo_tostring(li: LinkInfo) -> String {
     let mut s = "".to_owned();
     let smac = li.source_mac;
+    let smacc = MacAddress::new(smac);
     let dmac = li.destination_mac;
+    let dmacc = MacAddress::new(dmac);
     let mut sstring = "".to_owned();
     let mut dstring = "".to_owned();
 
-    let mut i = 0;
-    let mut y = 0;
 
-    while i < smac.len() {
-        sstring.push_str(&smac[i].to_string());
-        if (i != smac.len() - 1) {
-            sstring.push_str(&":");
-        }
-        i+=1;
-    }
-    while y < dmac.len() {
-        dstring.push_str(&dmac[y].to_string());
-        if (y != dmac.len() - 1) {
-            dstring.push_str(&":");
-        }
-        y+=1;
-    }
+    sstring.push_str(&mac_address_to_string(smacc));
+    dstring.push_str(&mac_address_to_string(dmacc));
 
     s.push_str(&"source mac: ");
     s.push_str(&sstring);
@@ -291,3 +303,131 @@ pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     }
     None
 }
+
+pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
+
+    let mut dns_string="".to_owned();
+
+    dns_string.push_str("Id: " );
+    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
+
+    let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
+    dns_string.push_str("; Opcode: ");
+    dns_string.push_str(opcode.as_str());
+
+    let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
+    dns_string.push_str("; Response code: ");
+    dns_string.push_str(response_code.as_str());
+
+    dns_string.push_str("; Questions name: " );
+    for x in application_level.as_ref().unwrap().queries.iter(){
+        dns_string.push_str( x.as_str());
+        dns_string.push_str(" | " );
+    }
+
+    dns_string.push_str("; Questions type: " );
+    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
+    dns_string.push_str(query_type.as_str());
+
+    dns_string.push_str("; Questions class: " );
+    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
+    dns_string.push_str(query_class.as_str());
+
+    dns_string.push_str("; Responses name: " );
+    for x in application_level.as_ref().unwrap().responses.iter(){
+        dns_string.push_str( x.as_str());
+        dns_string.push_str(" | " );
+    }
+    dns_string.push_str("; Responses class: " );
+    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
+    dns_string.push_str(response_class.as_str());
+
+    dns_string
+}
+
+pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
+
+
+    let  file = OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(filename)
+        .expect("unable to open file");
+
+    let mut file = BufWriter::new(file);
+
+    let vec = Vec::from_iter(report.iter());
+
+
+    for x in vec {
+        let string_to_print = parse_report(x);
+        write!(file, "{}", string_to_print).expect("unable to write");
+    }
+    /*if vec.len() != 0 {
+        let x = vec[vec.len()-1];
+        let string_to_print = parse_report(x);
+        write!(file, "{}", string_to_print).expect("unable to write");
+    }*/
+}
+
+pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
+
+    let mut string_report = "".to_owned();
+
+    string_report.push_str("-----Packet info-----");
+    string_report.push( '\n');
+
+    string_report.push_str("First pair: ");
+    string_report.push_str(report.0.first_pair.0.as_str());
+    string_report.push_str("; ");
+    string_report.push_str( report.0.first_pair.1.as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Second pair: ");
+    string_report.push_str(report.0.second_pair.0.to_string().as_str());
+    string_report.push_str("; ");
+    string_report.push_str(report.0.second_pair.1.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("First timestamp: ");
+    string_report.push_str(report.1.first_ts.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Last timestamp: ");
+    string_report.push_str(report.1.last_ts.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Total bytes: ");
+    string_report.push_str(report.1.total_bytes.to_string().as_str());
+    string_report.push( '\n');
+
+    string_report.push_str("Transport layer protocol: ");
+    string_report.push_str((report.1.transport_layer_protocols.to_string()).as_str());
+    string_report.push_str("\n");
+
+    string_report.push_str("Network layer protocol: ");
+    string_report.push_str((report.1.network_layer_protocols.to_string()).as_str());
+    string_report.push_str("\n");
+
+    string_report.push_str("Link layer info:");
+    string_report.push_str("\n");
+    string_report.push_str((report.1.link_layer_info.to_string()).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push_str("Icmp info:");
+    string_report.push_str("\n");
+    string_report.push_str((report.1.icmp_info.to_string()).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push_str("Dns info:");
+    string_report.push_str("\n");
+    string_report.push_str((report.1.dns_info.to_string()).as_str());
+    string_report.push_str("; \n");
+
+    string_report.push( '\n');
+    string_report.push( '\n');
+
+    string_report
+
+}
+
