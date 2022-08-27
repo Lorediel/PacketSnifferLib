@@ -1,0 +1,36 @@
+================================================
+NEW REPORT: 2022-08-27 18:31:05.231029 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; No port
+Second pair: 239.255.255.250; No port
+First timestamp: 1661617864
+Last timestamp: 1661617864
+Total bytes: 92
+Transport layer protocol: Unknown | IP protocol number: 2
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F  second mac address: 01:00:5E:7F:FF:FA  ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50264
+Second pair: 35.186.224.41; 443
+First timestamp: 1661617864
+Last timestamp: 1661617864
+Total bytes: 456
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F  second mac address: 90:FD:73:BF:44:6B  ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+

@@ -1,0 +1,10 @@
+[package]
+name = "packet_sniffer_app"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+PacketSnifferLib = {path = "../PacketSnifferLib"}
+clap = "3.2.17"

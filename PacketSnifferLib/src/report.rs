@@ -11,9 +11,11 @@ use etherparse::Icmpv4Type::*;
 use etherparse::LinkSlice::Ethernet2;
 use std::{str};
 use std::fmt::{Display, Formatter};
-use std::fs::{OpenOptions};
+use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, Write};
+use chrono::{DateTime, Local};
 use simple_dns::{CLASS, QCLASS, QTYPE};
+use crate::Errors;
 
 #[derive(Debug)]
 pub struct Report {
@@ -175,7 +177,10 @@ pub fn icmpv4_type_parser(icmp_type: Option<Icmpv4Type>) -> Option<String> {
         } => return Some(format!("Unknown, type: {}, code: {}", type_u8, code_u8).to_string()),
         Icmpv4Type::EchoReply(header) => {return Some("code: 0-Echo Reply".to_string())},
         Icmpv4Type::DestinationUnreachable(header) => {return Some(format!("code: {}-Destination Unreachable", header.code_u8()).to_string())},
-        Icmpv4Type::Redirect(header) => {return Some(format!("code: {}-Redirect", header.code.code_u8()).to_string())},
+        Icmpv4Type::Redirect(header) => {
+            let mut ip_addr = header.gateway_internet_address;
+            let mut s = format!("{}.{}.{}.{}", ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
+            return Some(format!("code: {}-Redirect {}", header.code.code_u8(), s).to_string())},
         Icmpv4Type::EchoRequest(header) => {return Some("code: 0-Echo Request".to_string())},
         Icmpv4Type::TimeExceeded(code)=> {return Some(format!("code: {}-Time Exceeded", code.code_u8()).to_string())},
         Icmpv4Type::ParameterProblem(header) => {return Some("Parameter Problem".to_string())},
@@ -202,7 +207,7 @@ pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<Transp
             Tcp(header) => {
                 return Some(TransportInfo{protocol: "TCP".to_string(), source_port: Some(header.source_port().to_string()), destination_port: Some(header.destination_port().to_string()), icmp_type: None});
             },
-            //Unknown(ip_protocol_number) => {return Some(TransportInfo{protocol: "Unknown".to_string(), source_port: None, destination_port: None});}
+            TransportSlice::Unknown(ip_protocol_number) => {return Some(TransportInfo{protocol: format!("Unknown | IP protocol number: {}", ip_protocol_number).to_string(), source_port: None, destination_port: None, icmp_type: None});}
             _ => {return None;}
 
         }
@@ -221,10 +226,10 @@ pub struct NetworkInfo {
 pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
     if ip_value.is_some() {
         match ip_value.unwrap() {
-            Ipv4(header, extension) => {
+            Ipv4(header, _) => {
                 return Some(NetworkInfo{protocol: "IPv4".to_string(), source_address: header.source_addr().to_string(), destination_address: header.destination_addr().to_string()});
             }
-            Ipv6(header, extenion) => {
+            Ipv6(header, _) => {
                 return Some(NetworkInfo{protocol: "IPv6".to_string(), source_address: header.source_addr().to_string(), destination_address: header.destination_addr().to_string()});
             }
         }
@@ -339,69 +344,80 @@ pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
 }
 
 pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
+    if application_level.is_some() {
+        let mut dns_string = "".to_owned();
 
-    let mut dns_string="".to_owned();
+        dns_string.push_str("Id: ");
+        dns_string.push_str(application_level.as_ref().unwrap().id.to_string().as_str());
 
-    dns_string.push_str("Id: " );
-    dns_string.push_str( application_level.as_ref().unwrap().id.to_string().as_str());
+        let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
+        dns_string.push_str("; Opcode: ");
+        dns_string.push_str(opcode.as_str());
 
-    let opcode = format!("{:?}", application_level.as_ref().unwrap().opcode);
-    dns_string.push_str("; Opcode: ");
-    dns_string.push_str(opcode.as_str());
+        let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
+        dns_string.push_str("; Response code: ");
+        dns_string.push_str(response_code.as_str());
 
-    let response_code = format!("{:?}", application_level.as_ref().unwrap().response_code);
-    dns_string.push_str("; Response code: ");
-    dns_string.push_str(response_code.as_str());
+        dns_string.push_str("; Questions name: ");
+        for x in application_level.as_ref().unwrap().queries.iter() {
+            dns_string.push_str(x.as_str());
+            dns_string.push_str(" | ");
+        }
 
-    dns_string.push_str("; Questions name: " );
-    for x in application_level.as_ref().unwrap().queries.iter(){
-        dns_string.push_str( x.as_str());
-        dns_string.push_str(" | " );
+        dns_string.push_str("; Questions type: ");
+        let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
+        dns_string.push_str(query_type.as_str());
+
+        dns_string.push_str("; Questions class: ");
+        let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
+        dns_string.push_str(query_class.as_str());
+
+        dns_string.push_str("; Responses name: ");
+        for x in application_level.as_ref().unwrap().responses.iter() {
+            dns_string.push_str(x.as_str());
+            dns_string.push_str(" | ");
+        }
+        dns_string.push_str("; Responses class: ");
+        let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
+        dns_string.push_str(response_class.as_str());
+
+        dns_string
     }
-
-    dns_string.push_str("; Questions type: " );
-    let query_type = format!("{:?}", application_level.as_ref().unwrap().query_type);
-    dns_string.push_str(query_type.as_str());
-
-    dns_string.push_str("; Questions class: " );
-    let query_class = format!("{:?}", application_level.as_ref().unwrap().query_class);
-    dns_string.push_str(query_class.as_str());
-
-    dns_string.push_str("; Responses name: " );
-    for x in application_level.as_ref().unwrap().responses.iter(){
-        dns_string.push_str( x.as_str());
-        dns_string.push_str(" | " );
+    else {
+        return "DNS packet not well formatted".to_string();
     }
-    dns_string.push_str("; Responses class: " );
-    let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
-    dns_string.push_str(response_class.as_str());
-
-    dns_string
 }
 
-pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>){
+pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> Result<(), Errors>{
 
 
-    let  file = OpenOptions::new()
+    let  file = match OpenOptions::new()
         .write(true)
         .append(true)
-        .open(filename)
-        .expect("unable to open file");
+        .create(true)
+        .open(filename) {
+        Ok(f) => {f},
+        Err(e) => {return Err(Errors::FileError("Cannot open file".to_string()))}
+    };
+
 
     let mut file = BufWriter::new(file);
 
     let vec = Vec::from_iter(report.iter());
-
-
+    let local: DateTime<Local> = Local::now();
+    write!(file, "================================================\n" ).expect("unable to write to file");
+    write!(file, "NEW REPORT: {}\n",local).expect("unable to write to file");
+    write!(file, "================================================\n\n").expect("unable to write to file");
     for x in vec {
         let string_to_print = parse_report(x);
-        write!(file, "{}", string_to_print).expect("unable to write");
+        write!(file, "{}", string_to_print).expect("unable to write to file");
     }
     /*if vec.len() != 0 {
         let x = vec[vec.len()-1];
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write");
     }*/
+    Ok(())
 }
 
 pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
