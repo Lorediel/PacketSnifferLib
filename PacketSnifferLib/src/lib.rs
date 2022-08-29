@@ -32,8 +32,8 @@ impl PacketCatcher {
 
     pub fn capture(
         &mut self,
-        device_name: &'static str,
-        filename: &'static str,
+        device_name: String,
+        filename: String,
         interval: u64,
         filter: Option<&str>,
     ) -> Result<(), Errors> {
@@ -42,18 +42,18 @@ impl PacketCatcher {
         }
 
         let mut cap =
-        match Capture::from_device(device_name) {
-            Ok(capture_active) => {
-                match capture_active.promisc(true)
-                    .immediate_mode(true)
-                    .open() {
-                    Ok(activated_cap) => {activated_cap},
-                    Err(e) => {return Err(Errors::InactivableCapture(device_name.clone().to_string()))}
-                }
-            },
-            Err(e) => {
-                return Err(Errors::InvalidCapture(e.to_string()));
-        }};
+            match Capture::from_device(device_name.as_str()) {
+                Ok(capture_active) => {
+                    match capture_active.promisc(true)
+                        .immediate_mode(true)
+                        .open() {
+                        Ok(activated_cap) => {activated_cap},
+                        Err(e) => {return Err(Errors::InactivableCapture(device_name.clone()))}
+                    }
+                },
+                Err(e) => {
+                    return Err(Errors::InvalidCapture(e.to_string()));
+                }};
 
         /*
         let mut cap = Capture::from_device(device_name)
@@ -89,7 +89,7 @@ impl PacketCatcher {
                     while *is_b {
                         is_b = cvar.wait(is_b).unwrap();
                         std::mem::drop(cap);
-                        cap = Capture::from_device(device_name)
+                        cap = Capture::from_device(device_name.as_str())
                             .unwrap()
                             .promisc(true)
                             .immediate_mode(true)
@@ -113,18 +113,8 @@ impl PacketCatcher {
         });
         let arc_map_2 = Arc::clone(&self.report_map);
         let is_blocked_write = Arc::clone(&self.cv_m);
-
-
-        let stop_capture2 = Arc::clone(&self.stop);
         let h_write = thread::spawn(move || {
             loop {
-                {
-                    let is_stopped = stop_capture2.lock().unwrap();
-
-                    if *is_stopped {
-                        break;
-                    }
-                }
                 {
                     let (cvar, lock) = &*is_blocked_write;
                     let mut is_b = lock.lock().unwrap();
@@ -135,7 +125,7 @@ impl PacketCatcher {
                 }
                 thread::sleep(Duration::from_millis(interval));
                 let mut map = arc_map_2.lock().unwrap();
-                PacketCatcher::empty_report(&mut *map, filename);
+                PacketCatcher::empty_report(&mut *map, &filename);
             }
         });
         self.h_write = Some(h_write);
