@@ -338,3 +338,1759 @@ Dns info:
 ; 
 
 
+================================================
+NEW REPORT: 2022-08-29 18:23:00.885483 +02:00
+================================================
+
+-----Packets info-----
+First pair: 140.82.113.25; 443
+Second pair: 192.168.1.12; 50728
+First timestamp: 1661790179
+Last timestamp: 1661790180
+Total bytes: 412
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790179
+Last timestamp: 1661790180
+Total bytes: 52921
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 63590
+First timestamp: 1661790180
+Last timestamp: 1661790180
+Total bytes: 188
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57621
+Second pair: 192.168.1.255; 57621
+First timestamp: 1661790179
+Last timestamp: 1661790179
+Total bytes: 172
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: FF:FF:FF:FF:FF:FF - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:01.891532 +02:00
+================================================
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 63590
+First timestamp: 1661790181
+Last timestamp: 1661790181
+Total bytes: 258
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790180
+Last timestamp: 1661790181
+Total bytes: 79636
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50856
+Second pair: 142.251.209.36; 443
+First timestamp: 1661790181
+Last timestamp: 1661790181
+Total bytes: 162
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:02.895267 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 63590
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790182
+Last timestamp: 1661790182
+Total bytes: 18213
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.16; 50009
+Second pair: 192.168.1.12; 57827
+First timestamp: 1661790181
+Last timestamp: 1661790182
+Total bytes: 79191
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790182
+Last timestamp: 1661790182
+Total bytes: 722
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:03.900112 +02:00
+================================================
+
+-----Packets info-----
+First pair: 185.199.108.133; 443
+Second pair: 192.168.1.12; 50812
+First timestamp: 1661790183
+Last timestamp: 1661790183
+Total bytes: 720
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 63590
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790182
+Last timestamp: 1661790183
+Total bytes: 5101
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790182
+Last timestamp: 1661790183
+Total bytes: 80216
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790183
+Last timestamp: 1661790183
+Total bytes: 334
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50760
+Second pair: 35.186.224.25; 443
+First timestamp: 1661790183
+Last timestamp: 1661790183
+Total bytes: 6997
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 63670
+Second pair: 192.168.1.1; 53
+First timestamp: 1661790183
+Last timestamp: 1661790183
+Total bytes: 298
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+Id: 57359; Opcode: StandardQuery; Response code: NoError; Questions name: spclient.wg.spotify.com | ; Questions type: [A]; Questions class: [IN]; Responses name: spclient.wg.spotify.com | edge-web.dual-gslb.spotify.com | ; Responses class: [IN, IN], Id: 57359; Opcode: StandardQuery; Response code: NoError; Questions name: spclient.wg.spotify.com | ; Questions type: [A]; Questions class: [IN]; Responses name: ; Responses class: []; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:04.905230 +02:00
+================================================
+
+-----Packets info-----
+First pair: 149.154.167.91; 443
+Second pair: 192.168.1.12; 50476
+First timestamp: 1661790184
+Last timestamp: 1661790184
+Total bytes: 408
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 63590
+First timestamp: 1661790184
+Last timestamp: 1661790184
+Total bytes: 4227
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790183
+Last timestamp: 1661790184
+Total bytes: 80408
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50845
+Second pair: 35.186.224.17; 443
+First timestamp: 1661790184
+Last timestamp: 1661790184
+Total bytes: 174
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:05.912119 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 5346
+Second pair: 192.168.1.1; 53
+First timestamp: 1661790185
+Last timestamp: 1661790185
+Total bytes: 238
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+Id: 64719; Opcode: StandardQuery; Response code: NoError; Questions name: api.github.com | ; Questions type: [A]; Questions class: [IN]; Responses name: ; Responses class: [], Id: 64719; Opcode: StandardQuery; Response code: NoError; Questions name: api.github.com | ; Questions type: [A]; Questions class: [IN]; Responses name: api.github.com | ; Responses class: [IN]; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 63590
+First timestamp: 1661790184
+Last timestamp: 1661790185
+Total bytes: 21769
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790184
+Last timestamp: 1661790185
+Total bytes: 80282
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50857
+Second pair: 140.82.121.5; 443
+First timestamp: 1661790185
+Last timestamp: 1661790185
+Total bytes: 6608
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790185
+Last timestamp: 1661790185
+Total bytes: 334
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:06.917408 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 49362
+Second pair: 35.186.224.47; 443
+First timestamp: 1661790186
+Last timestamp: 1661790186
+Total bytes: 431
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 63590
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790185
+Last timestamp: 1661790186
+Total bytes: 14976
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790185
+Last timestamp: 1661790186
+Total bytes: 80535
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790186
+Last timestamp: 1661790186
+Total bytes: 528
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 64862
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790186
+Last timestamp: 1661790186
+Total bytes: 2340
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50824
+Second pair: 140.82.113.26; 443
+First timestamp: 1661790186
+Last timestamp: 1661790186
+Total bytes: 108
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:07.922248 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.10; 5353
+Second pair: 224.0.0.251; 5353
+First timestamp: 1661790186
+Last timestamp: 1661790186
+Total bytes: 206
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 28:16:7F:6C:1D:46 - second mac address: 01:00:5E:00:00:FB - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 64862
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790186
+Last timestamp: 1661790187
+Total bytes: 19629
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790186
+Last timestamp: 1661790187
+Total bytes: 80813
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790187
+Last timestamp: 1661790187
+Total bytes: 334
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50476
+Second pair: 149.154.167.91; 443
+First timestamp: 1661790187
+Last timestamp: 1661790187
+Total bytes: 766
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 140.82.113.26; 443
+Second pair: 192.168.1.12; 50824
+First timestamp: 1661790186
+Last timestamp: 1661790186
+Total bytes: 132
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:08.926654 +02:00
+================================================
+
+-----Packets info-----
+First pair: 149.154.167.91; 443
+Second pair: 192.168.1.12; 50476
+First timestamp: 1661790187
+Last timestamp: 1661790187
+Total bytes: 440
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 64862
+First timestamp: 1661790187
+Last timestamp: 1661790188
+Total bytes: 5320
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790187
+Last timestamp: 1661790188
+Total bytes: 32217
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:09.930463 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:10.934924 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:11.938788 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:12.943948 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:13.947831 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:14.952492 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:24.090915 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.10; 49175
+Second pair: 239.255.255.250; 1900
+First timestamp: 1661790203
+Last timestamp: 1661790203
+Total bytes: 668
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 28:16:7F:6C:1D:46 - second mac address: 01:00:5E:7F:FF:FA - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 64862
+First timestamp: 1661790203
+Last timestamp: 1661790204
+Total bytes: 12898
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790203
+Last timestamp: 1661790204
+Total bytes: 47405
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:25.097336 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 50849
+Second pair: 162.159.138.234; 443
+First timestamp: 1661790204
+Last timestamp: 1661790204
+Total bytes: 395
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790204
+Last timestamp: 1661790205
+Total bytes: 79663
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 64862
+First timestamp: 1661790204
+Last timestamp: 1661790204
+Total bytes: 7663
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.19; 17500
+Second pair: 192.168.1.255; 17500
+First timestamp: 1661790204
+Last timestamp: 1661790204
+Total bytes: 492
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 08:71:90:00:AB:4F - second mac address: FF:FF:FF:FF:FF:FF - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.19; 17500
+Second pair: 255.255.255.255; 17500
+First timestamp: 1661790204
+Last timestamp: 1661790204
+Total bytes: 1230
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 08:71:90:00:AB:4F - second mac address: FF:FF:FF:FF:FF:FF - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:26.101940 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790205
+Last timestamp: 1661790206
+Total bytes: 78539
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 64862
+First timestamp: 1661790205
+Last timestamp: 1661790206
+Total bytes: 3206
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790205
+Last timestamp: 1661790205
+Total bytes: 643
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 5353
+Second pair: 224.0.0.251; 5353
+First timestamp: 1661790205
+Last timestamp: 1661790205
+Total bytes: 174
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 01:00:5E:00:00:FB - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: fe80::c8a:c158:bb9f:dc40; 5353
+Second pair: ff02::fb; 5353
+First timestamp: 1661790205
+Last timestamp: 1661790205
+Total bytes: 214
+Transport layer protocol: UDP
+Network layer protocol: IPv6
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 33:33:00:00:00:FB - ether type: 34525; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:27.106545 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 64862
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790206
+Last timestamp: 1661790207
+Total bytes: 12800
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790206
+Last timestamp: 1661790207
+Total bytes: 79629
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.10; 5353
+Second pair: 224.0.0.251; 5353
+First timestamp: 1661790206
+Last timestamp: 1661790206
+Total bytes: 206
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 28:16:7F:6C:1D:46 - second mac address: 01:00:5E:00:00:FB - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:28.112221 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 60564
+Second pair: 239.255.255.250; 1900
+First timestamp: 1661790207
+Last timestamp: 1661790207
+Total bytes: 334
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 01:00:5E:7F:FF:FA - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 57827
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790207
+Last timestamp: 1661790207
+Total bytes: 52894
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 64862
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790207
+Last timestamp: 1661790207
+Total bytes: 9173
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:23:29.118401 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:30.120936 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:31.126144 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:32.131962 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:33.137468 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:34.142826 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:35.144831 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:36.150254 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:23:37.151366 +02:00
+================================================
+
+================================================
+NEW REPORT: 2022-08-29 18:25:34.306121 +02:00
+================================================
+
+-----Packets info-----
+First pair: 34.158.0.131; 4070
+Second pair: 192.168.1.12; 49748
+First timestamp: 1661790333
+Last timestamp: 1661790333
+Total bytes: 220
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 53867
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790333
+Last timestamp: 1661790334
+Total bytes: 10683
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 51388
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790333
+Last timestamp: 1661790334
+Total bytes: 74953
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790333
+Last timestamp: 1661790334
+Total bytes: 528
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:25:35.307767 +02:00
+================================================
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 53867
+First timestamp: 1661790334
+Last timestamp: 1661790335
+Total bytes: 7173
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 51388
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790334
+Last timestamp: 1661790335
+Total bytes: 77132
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:25:36.312762 +02:00
+================================================
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 53867
+First timestamp: 1661790335
+Last timestamp: 1661790335
+Total bytes: 1617
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 51388
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790335
+Last timestamp: 1661790335
+Total bytes: 18096
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:26:09.713738 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 50849
+Second pair: 162.159.138.234; 443
+First timestamp: 1661790369
+Last timestamp: 1661790369
+Total bytes: 395
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 61413
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790368
+Last timestamp: 1661790369
+Total bytes: 4498
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 53295
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790368
+Last timestamp: 1661790369
+Total bytes: 78376
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:27:05.438728 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790425
+Last timestamp: 1661790425
+Total bytes: 862
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.16; 50009
+Second pair: 192.168.1.12; 55367
+First timestamp: 1661790423
+Last timestamp: 1661790425
+Total bytes: 141565
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 61413
+First timestamp: 1661790423
+Last timestamp: 1661790425
+Total bytes: 11856
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50849
+Second pair: 162.159.138.234; 443
+First timestamp: 1661790424
+Last timestamp: 1661790424
+Total bytes: 395
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:27:07.442299 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 55367
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790425
+Last timestamp: 1661790427
+Total bytes: 160455
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 61413
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790425
+Last timestamp: 1661790427
+Total bytes: 707
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 53464
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790426
+Last timestamp: 1661790426
+Total bytes: 348
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.10; 5353
+Second pair: 224.0.0.251; 5353
+First timestamp: 1661790427
+Last timestamp: 1661790427
+Total bytes: 206
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 28:16:7F:6C:1D:46 - second mac address: 01:00:5E:00:00:FB - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50824
+Second pair: 140.82.113.26; 443
+First timestamp: 1661790427
+Last timestamp: 1661790427
+Total bytes: 174
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:27:09.447787 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 50874
+Second pair: 142.250.180.131; 443
+First timestamp: 1661790429
+Last timestamp: 1661790429
+Total bytes: 264
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50876
+Second pair: 142.250.184.78; 443
+First timestamp: 1661790429
+Last timestamp: 1661790429
+Total bytes: 264
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 55367
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790427
+Last timestamp: 1661790429
+Total bytes: 161501
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 61413
+First timestamp: 1661790428
+Last timestamp: 1661790428
+Total bytes: 188
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 53464
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790427
+Last timestamp: 1661790429
+Total bytes: 408
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50877
+Second pair: 142.250.184.78; 443
+First timestamp: 1661790429
+Last timestamp: 1661790429
+Total bytes: 264
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50875
+Second pair: 142.250.180.131; 443
+First timestamp: 1661790429
+Last timestamp: 1661790429
+Total bytes: 264
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:27:11.453616 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790430
+Last timestamp: 1661790431
+Total bytes: 528
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 55367
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790429
+Last timestamp: 1661790431
+Total bytes: 160257
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 53464
+First timestamp: 1661790430
+Last timestamp: 1661790431
+Total bytes: 7601
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:27:28.745301 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 55367
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790446
+Last timestamp: 1661790448
+Total bytes: 154361
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 60564
+Second pair: 239.255.255.250; 1900
+First timestamp: 1661790447
+Last timestamp: 1661790447
+Total bytes: 334
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 01:00:5E:7F:FF:FA - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 66.22.238.17; 50004
+Second pair: 192.168.1.12; 53464
+First timestamp: 1661790446
+Last timestamp: 1661790448
+Total bytes: 23613
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 90:FD:73:BF:44:6B - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.10; 5353
+Second pair: 224.0.0.251; 5353
+First timestamp: 1661790447
+Last timestamp: 1661790447
+Total bytes: 206
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 28:16:7F:6C:1D:46 - second mac address: 01:00:5E:00:00:FB - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.2; 60000
+Second pair: 192.168.1.12; 60564
+First timestamp: 1661790447
+Last timestamp: 1661790447
+Total bytes: 804
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 10:09:F9:3A:8F:75 - second mac address: 7C:24:99:F3:49:5F - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+================================================
+NEW REPORT: 2022-08-29 18:28:14.393451 +02:00
+================================================
+
+-----Packets info-----
+First pair: 192.168.1.12; 50849
+Second pair: 162.159.138.234; 443
+First timestamp: 1661790493
+Last timestamp: 1661790493
+Total bytes: 395
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 50476
+Second pair: 149.154.167.91; 443
+First timestamp: 1661790493
+Last timestamp: 1661790493
+Total bytes: 1165
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 49978
+Second pair: 162.159.137.234; 443
+First timestamp: 1661790494
+Last timestamp: 1661790494
+Total bytes: 449
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 55304
+Second pair: 66.22.238.16; 50009
+First timestamp: 1661790492
+Last timestamp: 1661790494
+Total bytes: 148017
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 60556
+Second pair: 66.22.238.17; 50004
+First timestamp: 1661790492
+Last timestamp: 1661790494
+Total bytes: 338
+Transport layer protocol: UDP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+
+-----Packets info-----
+First pair: 192.168.1.12; 53345
+Second pair: 15.160.39.187; 443
+First timestamp: 1661790493
+Last timestamp: 1661790493
+Total bytes: 4793
+Transport layer protocol: TCP
+Network layer protocol: IPv4
+Link layer info:
+first mac address: 7C:24:99:F3:49:5F - second mac address: 90:FD:73:BF:44:6B - ether type: 2048; 
+Icmp info:
+; 
+Dns info:
+; 
+
+

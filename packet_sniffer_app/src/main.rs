@@ -22,7 +22,7 @@ struct Args {
 }
 
 
-pub fn mainwork(device_name: String, file_name: String) -> JoinHandle<()> {
+pub fn mainwork(device_name: String, file_name: String, interval: u64) -> JoinHandle<()> {
 
 
     let t1 = thread::spawn(move || {
@@ -30,10 +30,10 @@ pub fn mainwork(device_name: String, file_name: String) -> JoinHandle<()> {
         println!("Capture started \n");
         let mut p = PacketCatcher::new();
         //let x = p.capture(device_name.as_str(), file_name.as_str(), 1000, None);
-        let x = p.capture("\\Device\\NPF_{434FE10D-2348-48BF-9823-09CD95698329}", "prova.txt", 1000, None);
+        let x = p.capture(device_name, file_name, interval, None);
         match x {
             Ok(v) => {}
-            Err(e) => { println!("{:?}", e) }
+            Err(e) => { println!("{}", e) }
         }
 
          loop {
@@ -47,7 +47,7 @@ pub fn mainwork(device_name: String, file_name: String) -> JoinHandle<()> {
                 "stop" => {
                     p.stop_capture();
                     println!("Capture terminated");
-
+                    break;
                 },
                 "pause" => {
                     p.switch(true);
@@ -107,7 +107,7 @@ fn main() {
  */
 
     let args = Args::parse();
-    let thread = mainwork(args.device_name, args.file_name);
+    let thread = mainwork(args.device_name, args.file_name, args.interval);
     thread.join();
 
 }

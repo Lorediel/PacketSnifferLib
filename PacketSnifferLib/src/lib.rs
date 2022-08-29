@@ -55,21 +55,6 @@ impl PacketCatcher {
                     return Err(Errors::InvalidCapture(e.to_string()));
                 }};
 
-        /*
-        let mut cap = Capture::from_device(device_name)
-            .unwrap()
-            .promisc(true)
-            .immediate_mode(true)
-            .open()
-            .unwrap();
-        //Applica il filtro nel caso ci sia, altrimenti non fare nulla
-        match filter {
-            Some(filter) => {
-                cap.filter(filter, false).unwrap();
-            }
-            None => {}
-        }*/
-
         let is_blocked = Arc::clone(&self.cv_m);
         let arc_map = Arc::clone(&self.report_map);
         let stop_capture = Arc::clone(&self.stop);
@@ -113,8 +98,16 @@ impl PacketCatcher {
         });
         let arc_map_2 = Arc::clone(&self.report_map);
         let is_blocked_write = Arc::clone(&self.cv_m);
+        let stop_capture_w = Arc::clone(&self.stop);
         let h_write = thread::spawn(move || {
             loop {
+                {
+                    let is_stopped = stop_capture_w.lock().unwrap();
+
+                    if *is_stopped {
+                        break;
+                    }
+                }
                 {
                     let (cvar, lock) = &*is_blocked_write;
                     let mut is_b = lock.lock().unwrap();
