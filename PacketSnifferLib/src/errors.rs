@@ -2,11 +2,17 @@ use std::error::Error;
 use std::fmt;
 
 #[derive(Debug)]
+///Represent an enum of possible customized errors
 pub enum Errors {
+    /// Refers to " Error: Invalid Interval value: x, interval must be greater than 100 ms".
     InvalidInterval(u64),
+    /// Refers to " Error: Invalid device name: x".
     InactivableCapture(String),
+    /// Refers to " Cannot capture from device: x, check if the name is correct or if you have permissions".
     InvalidCapture(String),
+    /// Refers to" Cannot get device list, check if you have permission or if there are available devices".
     UnavailableDeviceList,
+    /// Refers to " File error: x".
     FileError(String)
 }
 
@@ -23,7 +29,6 @@ impl fmt::Display for Errors {
 
 
         }
-
         //write!(f, "Error: {:?}", &self)
     }
 }

@@ -1,5 +1,11 @@
-mod report;
-mod errors;
+//! Packet catcher is a library useful in order to capture
+//! and parse network packet of different type. It is able to capture
+//! packets of level 2, level 3 and Dns packets, parsing and optionally writing them into a specific
+//! text file.
+//!
+
+pub mod report;
+pub mod errors;
 
 
 use etherparse::InternetSlice::{Ipv4, Ipv6};
@@ -23,8 +29,9 @@ pub struct PacketCatcher{
     pub h_cap: Option<JoinHandle<()>>,
     pub h_write: Option<JoinHandle<()>>
 }
-impl PacketCatcher {
 
+
+impl PacketCatcher {
     pub fn new() -> PacketCatcher {
         let report_map = Arc::new(Mutex::new(HashMap::new()));
         PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, stop: Arc::new(Mutex::new(false)), h_cap: None, h_write: None}
