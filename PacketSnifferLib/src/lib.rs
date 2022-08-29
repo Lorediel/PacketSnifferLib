@@ -113,8 +113,18 @@ impl PacketCatcher {
         });
         let arc_map_2 = Arc::clone(&self.report_map);
         let is_blocked_write = Arc::clone(&self.cv_m);
+
+
+        let stop_capture2 = Arc::clone(&self.stop);
         let h_write = thread::spawn(move || {
             loop {
+                {
+                    let is_stopped = stop_capture2.lock().unwrap();
+
+                    if *is_stopped {
+                        break;
+                    }
+                }
                 {
                     let (cvar, lock) = &*is_blocked_write;
                     let mut is_b = lock.lock().unwrap();
