@@ -4,7 +4,6 @@ use std::fmt;
 #[derive(Debug)]
 pub enum Errors {
     InvalidInterval(u64),
-<<<<<<< HEAD:PacketSnifferLib/src/errors.rs
     InactivableCapture(String),
     InvalidCapture(String),
     UnavailableDeviceList,
@@ -26,13 +25,6 @@ impl fmt::Display for Errors {
         }
 
         //write!(f, "Error: {:?}", &self)
-=======
-}
-
-impl fmt::Display for Errors {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Error: {:?}", &self)
->>>>>>> 9fc9d9a5a7872250a9e9466f542d81a5df060233:src/errors.rs
     }
 }
 

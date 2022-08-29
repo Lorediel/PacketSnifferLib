@@ -307,9 +307,11 @@ pub fn linkinfo_tostring(li: &LinkInfo) -> String {
 
     s.push_str(&"first mac address: ");
     s.push_str(&sstring);
-    s.push_str(&"  second mac address: ");
+    s.push_str(&" - ");
+    s.push_str(&"second mac address: ");
     s.push_str(&dstring);
-    s.push_str(&"  ether type: ");
+    s.push_str(&" - ");
+    s.push_str(&"ether type: ");
     s.push_str(&li.ether_type);
     s
 }
@@ -395,30 +397,18 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
         .write(true)
         .append(true)
         .create(true)
-<<<<<<< HEAD:PacketSnifferLib/src/report.rs
         .open(filename) {
         Ok(f) => {f},
         Err(e) => {return Err(Errors::FileError("Cannot open file".to_string()))}
     };
 
-=======
-        .open(filename)
-        .expect("unable to open file");
->>>>>>> 9fc9d9a5a7872250a9e9466f542d81a5df060233:src/report.rs
-
     let mut file = BufWriter::new(file);
 
     let vec = Vec::from_iter(report.iter());
     let local: DateTime<Local> = Local::now();
-<<<<<<< HEAD:PacketSnifferLib/src/report.rs
-    write!(file, "================================================\n" ).expect("unable to write to file");
-    write!(file, "NEW REPORT: {}\n",local).expect("unable to write to file");
-    write!(file, "================================================\n\n").expect("unable to write to file");
-=======
     write!(file, "================================================\n");
     write!(file, "NEW REPORT: {}\n",local);
     write!(file, "================================================\n\n");
->>>>>>> 9fc9d9a5a7872250a9e9466f542d81a5df060233:src/report.rs
     for x in vec {
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write to file");
