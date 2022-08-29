@@ -115,21 +115,6 @@ impl AddressPortPair {
         AddressPortPair{first_pair: (first_address, first_port), second_pair: (second_address, second_port)}
     }
 
-    /*pub fn to_string(&self) -> String{
-        let mut return_string = "".to_owned();
-        return_string.push_str(&"First pair: ");
-        return_string.push_str(self.first_pair.0.as_str());
-        return_string.push_str(&", ");
-        return_string.push_str(self.first_pair.1.as_str());
-
-        return_string.push_str(&"Second pair: ");
-        return_string.push_str(self.second_pair.0.as_str());
-        return_string.push_str(&", ");
-        return_string.push_str(self.second_pair.1.as_str());
-
-        return_string
-
-    } */
 }
 
 
@@ -413,11 +398,7 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write to file");
     }
-    /*if vec.len() != 0 {
-        let x = vec[vec.len()-1];
-        let string_to_print = parse_report(x);
-        write!(file, "{}", string_to_print).expect("unable to write");
-    }*/
+
     Ok(())
 }
 

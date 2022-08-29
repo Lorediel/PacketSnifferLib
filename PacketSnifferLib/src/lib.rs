@@ -149,11 +149,7 @@ impl PacketCatcher {
 
     pub fn empty_report(map: &mut HashMap<AddressPortPair, Report>, filename: &str){
 
-        /*
-        for (key, value) in map.iter() {
-            println!("{:?}, {:?}", key, value);
-        }*/
-        println!("fatto");
+        //println!("fatto");
         write_file(filename, &*map);
         map.clear();
     }

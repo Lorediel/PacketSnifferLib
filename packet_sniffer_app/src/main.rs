@@ -6,6 +6,7 @@ use PacketSnifferLib::PacketCatcher;
 use std::string::String;
 use std::thread::JoinHandle;
 use clap::Parser;
+use throbber::Throbber;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -27,9 +28,13 @@ pub fn mainwork(device_name: String, file_name: String, interval: u64) -> JoinHa
 
     let t1 = thread::spawn(move || {
 
-        println!("Capture started \n");
+       /* let mut throbber = Throbber::new()
+            .message("Capture running".to_string())
+            .frames(&throbber::CIRCLE_F); */
+
+        println!("Capture running... \n");
+        //throbber.start();
         let mut p = PacketCatcher::new();
-        //let x = p.capture(device_name.as_str(), file_name.as_str(), 1000, None);
         let x = p.capture(device_name, file_name, interval, None);
         match x {
             Ok(v) => {}
@@ -47,15 +52,19 @@ pub fn mainwork(device_name: String, file_name: String, interval: u64) -> JoinHa
                 "stop" => {
                     p.stop_capture();
                     println!("Capture terminated");
+                    //throbber.success("Capture terminated!".to_string());
+                    //throbber.end();
                     break;
                 },
                 "pause" => {
                     p.switch(true);
                     println!("Capture suspended");
+                    //throbber.success("Capture suspended".to_string());
                 },
                 "resume" => {
                     p.switch(false);
-                    println!("Capture resumed");
+                    println!("Capture running...");
+                    //throbber.start();
                 },
                 _ => {
                     println!("Wrong command");
@@ -73,6 +82,10 @@ pub fn mainwork(device_name: String, file_name: String, interval: u64) -> JoinHa
 
 
 fn main() {
+
+    let args = Args::parse();
+    let thread = mainwork(args.device_name, args.file_name, args.interval);
+    thread.join();
 
 /*
 
@@ -106,9 +119,6 @@ fn main() {
 
  */
 
-    let args = Args::parse();
-    let thread = mainwork(args.device_name, args.file_name, args.interval);
-    thread.join();
 
 }
 
