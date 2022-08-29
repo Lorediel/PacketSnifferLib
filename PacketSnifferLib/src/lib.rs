@@ -133,8 +133,6 @@ impl PacketCatcher {
         Ok(())
     }
 
-
-
     pub fn switch(&mut self, val: bool){
         let cv_m = Arc::clone(&self.cv_m);
         let (cvar, lock) = &*cv_m;
@@ -167,24 +165,31 @@ impl PacketCatcher {
         map.clear();
     }
 
-    pub fn parse_network_adapter() -> Result<(), Errors> {
+    pub fn parse_network_adapter() -> Result<(Vec<String>), Errors> {
         let list = match Device::list() {
             Ok(list) => {list},
             Err(e) => {return Err(Errors::UnavailableDeviceList)}
         };
 
+        let mut vettore = Vec::new();
         for (pos, d) in list.into_iter().enumerate() {
             let mut name = "".to_owned();
             name.push_str(&(pos+1).to_string());
             name.push_str(&") ");
             name.push_str(&d.name);
             println!("{}", name.replace("\\", "\\\\"));
+
+            let mut name_vec = "".to_owned();
+            name_vec.push_str(&d.name);
+            name_vec.replace("\\", "\\\\");
+            vettore.push(name_vec);
+
             let mut s1: String = "       -Description: ".to_owned();
             let s2: String = "       -Addresses: ".to_owned();
             let s3 = d.desc;
             let desc = match s3 {
                 Some(des) => des,
-                None => "No description".to_string()
+                None => "No description available".to_string()
             };
             s1.push_str(&desc);
             println!("{}", s1); //Description
@@ -201,7 +206,7 @@ impl PacketCatcher {
             }
             println!(" ");
         }
-        Ok(())
+        Ok(vettore)
     }
 
 
