@@ -26,8 +26,6 @@ impl fmt::Display for Errors {
             Errors::UnavailableDeviceList => {write!(f, "Cannot get device list, check if you have permission or if there are available devices")},
             Errors::FileError(err) => {write!(f, "File error: {}", err)}
             _ => (write!(f, "Generic error")),
-
-
         }
         //write!(f, "Error: {:?}", &self)
     }

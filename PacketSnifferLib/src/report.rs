@@ -18,17 +18,27 @@ use simple_dns::{CLASS, QCLASS, QTYPE};
 use crate::Errors;
 
 #[derive(Debug)]
+///Struct useful to contains info relative to each single packet.
 pub struct Report {
+    /// First timestamp of the packet
     first_ts: u64,
+    /// Last timestamp of the packet
     last_ts: u64,
+    /// Total packet bytes
     total_bytes: u32,
+    /// Informations about transport layer protocol
     transport_layer_protocols: HashSet<String>,
+    /// Informations about network layer protocol
     network_layer_protocols: String,
+    /// Informations about link layer protocol
     link_layer_info: HashSet<LinkInfo>,
+    /// Informations about icmp messages
     icmp_info: HashSet<String>,
+    /// Informations about dns packet
     dns_info: HashSet<String>
 }
 
+/// Struct representing a Mac address.
 pub struct MacAddress {
     bytes: [u8; 6],
 }
@@ -42,8 +52,9 @@ impl MacAddress {
 
 
 impl Report {
-    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: LinkInfo, icmp_string: String, dns_string: String) -> Report {
 
+    /// Create a new Report struct.
+    pub fn new(ts: u64, bytes: u32, tlp: String, nlp: String, llp: LinkInfo, icmp_string: String, dns_string: String) -> Report {
         let mut t_set = HashSet::new();
         let mut l_set = HashSet::new();
         let mut icmp_set = HashSet::new();
@@ -56,9 +67,8 @@ impl Report {
         Report{first_ts: ts, last_ts: ts, total_bytes: bytes, transport_layer_protocols: t_set, network_layer_protocols: nlp, link_layer_info: l_set, icmp_info: icmp_set, dns_info: dns_set}
     }
 
-
+    /// Update an existing Report struct, replacing each field of the struct with the fields passed through parameters.
     pub fn update_report(&mut self, ts: u64, bytes: u32, tlp: String, nlp: String, llp: LinkInfo, icmp_inf: String, dns_inf: String) {
-
         self.last_ts = ts;
         self.total_bytes += bytes;
         self.transport_layer_protocols.insert(tlp);
@@ -72,6 +82,7 @@ impl Report {
 
 
 #[derive(Debug)]
+/// Struct representing a pair of tuple (String, String). It is used in order to identify the package uniquely.
 pub struct AddressPortPair {
     pub first_pair: (String, String),
     pub second_pair: (String, String)
@@ -111,6 +122,7 @@ impl Hash for AddressPortPair{
 
 
 impl AddressPortPair {
+    /// Create a new AddressPortPair struct.
     pub fn new(first_address: String, first_port: String, second_address: String, second_port: String) -> AddressPortPair {
         AddressPortPair{first_pair: (first_address, first_port), second_pair: (second_address, second_port)}
     }
@@ -120,14 +132,19 @@ impl AddressPortPair {
 
 
 #[derive(Debug)]
+///Struct containing fields relative to transport layer informations.
 pub struct TransportInfo {
+    /// Transport layer protocol
     pub protocol: String,
+    /// Source packet port
     pub source_port: Option<String>,
+    /// Destination packet port
     pub destination_port: Option<String>,
+    /// Optional Icmp packet type
     pub icmp_type: Option<String>,
 }
 
-
+/// Function which performs the parsing of an icmpv6 packet, returning an `Option<String>` which contains icmp packet type.
 pub fn icmpv6_type_parser(icmp_type: Option<Icmpv6Type>) -> Option<String>{
     if icmp_type.is_none() {
         return None;
@@ -149,6 +166,7 @@ pub fn icmpv6_type_parser(icmp_type: Option<Icmpv6Type>) -> Option<String>{
     }
 }
 
+/// Function which performs the parsing of an icmpv4 packet, returning an `Option<String>` which contains icmp packet type.
 pub fn icmpv4_type_parser(icmp_type: Option<Icmpv4Type>) -> Option<String> {
     if icmp_type.is_none() {
         return None;
@@ -173,7 +191,9 @@ pub fn icmpv4_type_parser(icmp_type: Option<Icmpv4Type>) -> Option<String> {
         Icmpv4Type::TimestampReply(tsMessage) => {return Some("code: 0-Timestamp Reply".to_string())},
     };
 }
-//icmp_type: Some(i_slice.type_u8()
+
+/// Function that performs the parsing of transport layer information. It takes as parameter an `Option<TransportSlice>`
+/// and return an `Option<TransportInfo>`. The admitted protocol are Icmpv4, Icmpv6, Udp and Tcp.
 pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<TransportInfo> {
     if transport_value.is_some() {
         match transport_value.unwrap() {
@@ -201,13 +221,19 @@ pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<Transp
 }
 
 #[derive(Debug)]
+/// Struct containing informations about network layer.
 pub struct NetworkInfo {
+    /// Network layer protocol
     pub protocol: String,
+    /// Source address of the packet
     pub source_address: String,
+    /// Destination address of the packet
     pub destination_address: String
 }
 
 //Can also check extension headers
+/// Function that performs the parsing of network layer information. It takes as parameter an `Option<InternetSlice>`
+/// and return an `Option<NetworkInfo>`. The admitted protocol are Ipv4 and Ipv6.
 pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
     if ip_value.is_some() {
         match ip_value.unwrap() {
@@ -223,9 +249,13 @@ pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
 }
 
 #[derive(Debug, Clone)]
+/// Struct that contains informations relative to link layer.
 pub struct LinkInfo {
+    /// Source mac of the packet
     pub source_mac: [u8; 6],
+    /// Destination mac of the packet
     pub destination_mac: [u8; 6],
+    /// EtherType of the ethernet frame
     pub ether_type: String
 }
 
@@ -261,22 +291,25 @@ impl Hash for LinkInfo{
     }
 }
 
+/// Function that performs the parsing of link layer information. It takes as parameter an `Option<LinkSlice>`
+/// and return an `Option<LinkInfo>`. The admitted protocol is Ethernet2.
 pub fn parse_link(link_value: Option<LinkSlice>) -> Option<LinkInfo> {
     if link_value.is_some() {
         match link_value.unwrap() {
             Ethernet2(header) => {
                 return Some(LinkInfo{source_mac: header.source(), destination_mac: header.destination(), ether_type: header.ether_type().to_string()});
             }
-
         }
     }
     None
 }
 
+/// Function that converts a MacAddress struct into a String.
 pub fn mac_address_to_string(mac: MacAddress) -> String{
     format!("{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}", mac.bytes[0], mac.bytes[1],mac.bytes[2],mac.bytes[3],mac.bytes[4],mac.bytes[5])
 }
 
+/// Function that converts and formats a LinkInfo struct into a String.
 pub fn linkinfo_tostring(li: &LinkInfo) -> String {
     let mut s = "".to_owned();
     let smac = li.source_mac;
@@ -395,8 +428,8 @@ pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
     }
 }
 
+/// Function that write on a specified txt file an `HashMap<AddressPortPair,Report>` struct.
 pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> Result<(), Errors>{
-
 
     let  file = match OpenOptions::new()
         .write(true)
@@ -422,6 +455,7 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
     Ok(())
 }
 
+/// Functions that converts and formats a tuple (&AddressPortPair, &Report) into a String, following a specific user-friendly schema.
 pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     let mut i;
     let mut string_report = "".to_owned();
