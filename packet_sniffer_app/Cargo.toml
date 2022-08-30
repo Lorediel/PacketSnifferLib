@@ -9,3 +9,7 @@ edition = "2021"
 PacketSnifferLib = {path = "../PacketSnifferLib"}
 clap = { version = "3.2.17", features = ["derive"] }
 throbber = "0.1"
+
+[build-dependencies]
+clap = { version = "3.2.17", features = ["derive"] }
+clap_mangen = "0.1.10"

@@ -84,7 +84,10 @@ pub fn mainwork(device_name: String, file_name: String, interval: u64) -> JoinHa
 fn main() {
 
     let args = Args::parse();
-    let thread = mainwork(args.device_name, args.file_name, args.interval);
+    let mut file_name = "".to_owned();
+    file_name.push_str(&args.file_name);
+    file_name.push_str(".txt");
+    let thread = mainwork(args.device_name, file_name, args.interval);
     thread.join();
 
 /*
