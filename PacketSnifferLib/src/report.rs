@@ -115,21 +115,6 @@ impl AddressPortPair {
         AddressPortPair{first_pair: (first_address, first_port), second_pair: (second_address, second_port)}
     }
 
-    /*pub fn to_string(&self) -> String{
-        let mut return_string = "".to_owned();
-        return_string.push_str(&"First pair: ");
-        return_string.push_str(self.first_pair.0.as_str());
-        return_string.push_str(&", ");
-        return_string.push_str(self.first_pair.1.as_str());
-
-        return_string.push_str(&"Second pair: ");
-        return_string.push_str(self.second_pair.0.as_str());
-        return_string.push_str(&", ");
-        return_string.push_str(self.second_pair.1.as_str());
-
-        return_string
-
-    } */
 }
 
 
@@ -317,18 +302,37 @@ pub fn linkinfo_tostring(li: &LinkInfo) -> String {
 }
 
 #[derive(Debug)]
+///Struct which reports info relative to dns.
 pub struct DnsInfo {
+    ///  Dns packet header Id
     pub id: u16,
+
+    ///  Opcode for this query
     pub opcode: simple_dns::OPCODE,
+
+    ///  Response code
     pub response_code: simple_dns::RCODE,
+
+    ///  Questions domain names
     pub queries: Vec<String>,
+
+    ///  Questions types (according to his own rfc)
     pub query_type : Vec<QTYPE> ,
+
+    ///  Questions classes (according to his own rfc)
     pub query_class : Vec<QCLASS>,
+
+    ///  Answers domain names
     pub responses : Vec<String>,
+
+    ///  Answers classes (according to his own rfc)
     pub response_class : Vec<CLASS>
+
 }
 
+/// The function parse dns packet gaining main informations.
 pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
+    //! It returns an `Option<DnsInfo>` object.
     if dns_packet.is_some() {
                 let dns = dns_packet.unwrap();
                 return Some(DnsInfo{
@@ -345,6 +349,7 @@ pub fn parse_dns(dns_packet: Option< simple_dns::Packet>) -> Option<DnsInfo> {
     None
 }
 
+/// The function takes as parameter an `OptionDns<Info>` struct and generate a String containing dns formatted informations.
 pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
     if application_level.is_some() {
         let mut dns_string = "".to_owned();
@@ -413,11 +418,7 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write to file");
     }
-    /*if vec.len() != 0 {
-        let x = vec[vec.len()-1];
-        let string_to_print = parse_report(x);
-        write!(file, "{}", string_to_print).expect("unable to write");
-    }*/
+
     Ok(())
 }
 
