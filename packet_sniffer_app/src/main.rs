@@ -4,9 +4,12 @@ use std::{io, thread};
 use std::time::Duration;
 use PacketSnifferLib::PacketCatcher;
 use std::string::String;
-use std::thread::JoinHandle;
+use std::thread::{JoinHandle, sleep};
 use clap::Parser;
 use throbber::Throbber;
+use std::io::{stdout, Write};
+use crossterm::{ExecutableCommand, execute, Result, cursor::{DisableBlinking, EnableBlinking, MoveTo, RestorePosition, SavePosition}, cursor, terminal};
+use crossterm::cursor::{MoveToColumn, MoveToNextLine, MoveToPreviousLine, MoveUp};
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -28,12 +31,42 @@ pub fn mainwork(device_name: String, file_name: String, interval: u64) -> JoinHa
 
     let t1 = thread::spawn(move || {
 
-       /* let mut throbber = Throbber::new()
+        let dots = [".", "..", "..."];
+        let mut s = stdout();
+
+
+        println!("Done!");
+        /*
+        let mut throbber = Throbber::new()
             .message("Capture running".to_string())
-            .frames(&throbber::CIRCLE_F); */
+            .frames(&throbber::CIRCLE_F)
+            ;*/
+
 
         println!("Capture running... \n");
-        //throbber.start();
+
+
+        thread::spawn(move || {
+            let mut i = 0;
+            let dots = [".  ", ".. ", "..."];
+            loop {
+                s.lock();
+
+                execute!(
+                    stdout(),
+                    SavePosition,
+                    MoveToPreviousLine(2),
+                    MoveToColumn(0)
+                );
+                s.execute(terminal::Clear(terminal::ClearType::CurrentLine)).unwrap();
+                s.write(format!("Capturing{}", dots[i]).as_bytes()).unwrap();
+
+                i = i+1;
+                if i==3 {i=0}
+                s.execute(cursor::RestorePosition);
+                sleep(Duration::from_millis(1000));
+            }
+        });
         let mut p = PacketCatcher::new();
         let x = p.capture(device_name, file_name, interval, None);
         match x {
