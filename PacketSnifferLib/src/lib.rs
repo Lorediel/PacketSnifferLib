@@ -23,8 +23,8 @@ use std::thread::JoinHandle;
 use std::string::String;
 use std::time::Duration;
 use report::*;
-use crate::errors::Errors;
-use crate::Errors::InvalidInterval;
+use crate::errors::PacketSnifferError;
+use crate::PacketSnifferError::InvalidInterval;
 ///Struct useful to manage info about sniffed packages and to control the capture flow.
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
@@ -53,12 +53,11 @@ impl PacketCatcher {
         device_name: String,
         filename: String,
         interval: u64,
-        filter: Option<&str>,
-    ) -> Result<(), Errors> {
+        filter: Option<String>,
+    ) -> Result<(), PacketSnifferError> {
         if interval < 100 {
-            return Err(Errors::InvalidInterval(interval));
+            return Err(PacketSnifferError::InvalidInterval(interval));
         }
-
         let mut cap =
             match Capture::from_device(device_name.as_str()) {
                 Ok(capture_active) => {
@@ -66,13 +65,18 @@ impl PacketCatcher {
                         .immediate_mode(true)
                         .open() {
                         Ok(activated_cap) => {activated_cap},
-                        Err(e) => {return Err(Errors::InactivableCapture(device_name.clone()))}
+                        Err(e) => {return Err(PacketSnifferError::InactivableCapture(device_name, e.to_string()))}
                     }
                 },
                 Err(e) => {
-                    return Err(Errors::InvalidCapture(e.to_string()));
+                    return Err(PacketSnifferError::InvalidCapture(device_name, e.to_string()));
                 }};
-
+        if filter.is_some() {
+            match cap.filter(filter.as_ref().unwrap().as_str(), true) {
+                Ok(()) => {},
+                Err(e) => {return Err(PacketSnifferError::InvalidFilter(filter.unwrap(), e.to_string()))}
+            };
+        }
         let is_blocked = Arc::clone(&self.cv_m);
         let arc_map = Arc::clone(&self.report_map);
         let stop_capture = Arc::clone(&self.stop);
@@ -176,10 +180,10 @@ impl PacketCatcher {
         map.clear();
     }
 }
-pub fn parse_network_adapter() -> Result<(Vec<String>), Errors> {
+pub fn parse_network_adapter() -> Result<(Vec<String>), PacketSnifferError> {
     let list = match Device::list() {
         Ok(list) => {list},
-        Err(e) => {return Err(Errors::UnavailableDeviceList)}
+        Err(e) => {return Err(PacketSnifferError::UnavailableDeviceList(e.to_string()))}
     };
 
     let mut vettore = Vec::new();

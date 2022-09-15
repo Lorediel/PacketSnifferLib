@@ -15,7 +15,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, Write};
 use chrono::{DateTime, Local};
 use simple_dns::{CLASS, QCLASS, QTYPE};
-use crate::Errors;
+use crate::PacketSnifferError;
 
 #[derive(Debug)]
 ///Struct useful to contains info relative to each single packet.
@@ -429,7 +429,7 @@ pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
 }
 
 /// Function that write on a specified txt file an `HashMap<AddressPortPair,Report>` struct.
-pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> Result<(), Errors>{
+pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> Result<(), PacketSnifferError>{
 
     let  file = match OpenOptions::new()
         .write(true)
@@ -437,7 +437,7 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
         .create(true)
         .open(filename) {
         Ok(f) => {f},
-        Err(e) => {return Err(Errors::FileError(e.to_string()))}
+        Err(e) => {return Err(PacketSnifferError::FileError(e.to_string()))}
     };
 
     let mut file = BufWriter::new(file);

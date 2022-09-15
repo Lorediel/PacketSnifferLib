@@ -27,6 +27,8 @@ pub struct CaptureCommand {
     pub file_name: String,
     /// The interval after which a new report is generated in the file
     pub interval: u64,
+    /// (Optional) The filter that needs to be applied to the packets, following the Berkeley Packet Filter Syntax
+    pub filter: Option<String>
 }
 
 #[derive(Debug, Args)]
