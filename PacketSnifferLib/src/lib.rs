@@ -1,10 +1,14 @@
-//! Packet catcher is a library useful in order to capture
+//! Packet sniffer is a library useful in order to capture
 //! and parse network packet of different type. It is able to capture
 //! packets of level 2, level 3 and Dns packets, parsing and optionally writing them into a specific
 //! text file.
 //!
 
+/// Mod containing structs and functions useful in order to parse, format and write on file the informations
+/// relative to a specific packet.
 pub mod report;
+
+/// Mod containing a struct to manage most common errors.
 pub mod errors;
 
 
@@ -21,22 +25,29 @@ use std::time::Duration;
 use report::*;
 use crate::errors::Errors;
 use crate::Errors::InvalidInterval;
-
+///Struct useful to manage info about sniffed packages and to control the capture flow.
 pub struct PacketCatcher{
     cv_m: Arc<(Condvar,Mutex<bool>)>,
+    /// Field that contains an ```Arc< Mutex<HashMap<AddressPortPair, Report>>>``` object used in order to contain packets informations.
     report_map: Arc< Mutex<HashMap<AddressPortPair, Report>>>,
     stop: Arc<Mutex<bool>>,
+    /// `Option<JoinHandle<()>>` relative to capture process.
     pub h_cap: Option<JoinHandle<()>>,
+    /// `Option<JoinHandle<()>>` relative to write on file process.
     pub h_write: Option<JoinHandle<()>>
 }
 
 
 impl PacketCatcher {
+    /// Create a new  PacketCatcher struct.
     pub fn new() -> PacketCatcher {
         let report_map = Arc::new(Mutex::new(HashMap::new()));
         PacketCatcher{cv_m: Arc::new((Condvar::new(), Mutex::new(false))), report_map, stop: Arc::new(Mutex::new(false)), h_cap: None, h_write: None}
     }
 
+    /// Performs packets capture packet by packet on a specific device. It takes as parameter also the name
+    /// of the output file and the updating interval of the report.
+    /// In case of successful catching, it call function `parse_packet` which update a `HashMap<AddressPortPair, Report>` struct.
     pub fn capture(
         &mut self,
         device_name: String,
@@ -133,6 +144,9 @@ impl PacketCatcher {
         Ok(())
     }
 
+    ///Performs start and pause of the packet capture action. It takes as parameter a boolean value.
+    /// If parameter `val: bool` is true, capturing will pause.
+    /// If parameter `val: bool` is false, capturing will resume.
     pub fn switch(&mut self, val: bool){
         let cv_m = Arc::clone(&self.cv_m);
         let (cvar, lock) = &*cv_m;
@@ -141,6 +155,7 @@ impl PacketCatcher {
         cvar.notify_all();
     }
 
+    /// The function stop definitely the packets capturing.
     pub fn stop_capture(&mut self){
         let stop_capture = Arc::clone(&self.stop);
         let mut is_stopped = stop_capture.lock().unwrap();
@@ -153,9 +168,9 @@ impl PacketCatcher {
     }
 
 
-
+    /// The function is used in order to write on the text file the content of the parameter `map`.
+    /// It also clears the parameter HashMap to create a new report `HashMap<AddressPortPair, Report>`.
     pub fn empty_report(map: &mut HashMap<AddressPortPair, Report>, filename: &str){
-
         //println!("fatto");
         write_file(filename, &*map);
         map.clear();
@@ -204,8 +219,8 @@ pub fn parse_network_adapter() -> Result<(Vec<String>), Errors> {
     }
     Ok(vettore)
 }
-fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
 
+fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
 
     match SlicedPacket::from_ethernet(&packet) {
         Err(value) => println!("Err {:?}", value),
