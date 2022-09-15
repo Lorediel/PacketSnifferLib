@@ -404,7 +404,7 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
         .create(true)
         .open(filename) {
         Ok(f) => {f},
-        Err(e) => {return Err(Errors::FileError("Cannot open file".to_string()))}
+        Err(e) => {return Err(Errors::FileError(e.to_string()))}
     };
 
     let mut file = BufWriter::new(file);
