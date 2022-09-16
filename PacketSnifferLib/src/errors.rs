@@ -18,7 +18,6 @@ pub enum PacketSnifferError {
     InvalidFilter(String, String)
 }
 
-
 impl fmt::Display for PacketSnifferError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -28,7 +27,6 @@ impl fmt::Display for PacketSnifferError {
             PacketSnifferError::UnavailableDeviceList(error_string) => {write!(f, "Cannot get device list, check if you have permission or if there are available devices.\nDetailed error: {}", error_string)},
             PacketSnifferError::FileError(err) => {write!(f, "File error: {}", err)},
             PacketSnifferError::InvalidFilter(filter, error_string) => {write!(f, "Invalid filter: {}, check https://biot.com/capstats/bpf.html to know the syntax.\nDetailed error: {}", filter, error_string)}
-            _ => (write!(f, "Generic error")),
         }
     }
 }

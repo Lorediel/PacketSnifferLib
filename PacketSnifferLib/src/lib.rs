@@ -3,6 +3,18 @@
 //! packets of level 2, level 3 and Dns packets, parsing and optionally writing them into a specific
 //! text file.
 //!
+//! # Example on how to capture
+//!
+//! ```no_run
+//! let mut p = PacketCatcher::new();
+//! p.capture("en0", "filename.txt", 1000, Some("tcp or udp")).unwrap();
+//! thread::sleep(time::Duration::from_millis(3000)); //sleep for 3 seconds
+//! p.switch(true); //pause the capture
+//! thread::sleep(time::Duration::from_millis(3000)); //sleep for 3 seconds
+//! p.switch(false); //resume the capture
+//! thread::sleep(time::Duration::from_millis(4000)); //sleep for 4 seconds
+//! p.stop_capture(); //stop the capture
+//! ```
 
 /// Mod containing structs and functions useful in order to parse, format and write on file the informations
 /// relative to a specific packet.
@@ -27,9 +39,11 @@ use crate::errors::PacketSnifferError;
 use crate::PacketSnifferError::InvalidInterval;
 ///Struct useful to manage info about sniffed packages and to control the capture flow.
 pub struct PacketCatcher{
+    /// Arc that has a condition variable and a Mutex with the value to stop and resume the capture process
     cv_m: Arc<(Condvar,Mutex<bool>)>,
     /// Field that contains an ```Arc< Mutex<HashMap<AddressPortPair, Report>>>``` object used in order to contain packets informations.
     report_map: Arc< Mutex<HashMap<AddressPortPair, Report>>>,
+    /// Arc that contains a mutex that has a value to stop the capturing process
     stop: Arc<Mutex<bool>>,
     /// `Option<JoinHandle<()>>` relative to capture process.
     pub h_cap: Option<JoinHandle<()>>,
@@ -48,6 +62,10 @@ impl PacketCatcher {
     /// Performs packets capture packet by packet on a specific device. It takes as parameter also the name
     /// of the output file and the updating interval of the report.
     /// In case of successful catching, it call function `parse_packet` which update a `HashMap<AddressPortPair, Report>` struct.
+    /// `device_name` Name of the device to be analyzed.
+    /// `filename` file name of the file which will contain the report.
+    /// `interval` Interval after which a new report is generated.
+    /// `filter` Filter to be applied to the capture, following the Berkeley Packet Filter Syntax. Check guide at [link](https://biot.com/capstats/bpf.html).
     pub fn capture(
         &mut self,
         device_name: String,
@@ -81,7 +99,7 @@ impl PacketCatcher {
         let arc_map = Arc::clone(&self.report_map);
         let stop_capture = Arc::clone(&self.stop);
         let h = thread::spawn(move || {
-            let mut i = 0;
+            let _i = 0;
             'outer: loop {
                 {
                     let is_stopped = stop_capture.lock().unwrap();
@@ -176,11 +194,13 @@ impl PacketCatcher {
     /// It also clears the parameter HashMap to create a new report `HashMap<AddressPortPair, Report>`.
     pub fn empty_report(map: &mut HashMap<AddressPortPair, Report>, filename: &str){
         //println!("fatto");
-        write_file(filename, &*map);
+        write_file(filename, &*map).unwrap();
         map.clear();
     }
 }
-pub fn parse_network_adapter() -> Result<(Vec<String>), PacketSnifferError> {
+
+/// Writes the network adapters parsed in a human readable way
+pub fn parse_network_adapter() -> Result<Vec<String>, PacketSnifferError> {
     let list = match Device::list() {
         Ok(list) => {list},
         Err(e) => {return Err(PacketSnifferError::UnavailableDeviceList(e.to_string()))}
@@ -196,7 +216,7 @@ pub fn parse_network_adapter() -> Result<(Vec<String>), PacketSnifferError> {
 
         let mut name_vec = "".to_owned();
         name_vec.push_str(&d.name);
-        name_vec.replace("\\", "\\\\");
+        name_vec = name_vec.replace("\\", "\\\\");
         vettore.push(name_vec);
 
         let mut s1: String = "       -Description: ".to_owned();
@@ -212,7 +232,7 @@ pub fn parse_network_adapter() -> Result<(Vec<String>), PacketSnifferError> {
         print!(" ");
 
         let mut i = 0;
-        while ( i<d.addresses.len() ) {
+        while  i<d.addresses.len()  {
             println!("{:?}", d.addresses[i]);
             if  i != d.addresses.len() - 1 {
                 print!("                    ");
@@ -224,6 +244,7 @@ pub fn parse_network_adapter() -> Result<(Vec<String>), PacketSnifferError> {
     Ok(vettore)
 }
 
+/// Takes as argument the `packet` to parse and saves it inside the `report_map`
 fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report>) {
 
     match SlicedPacket::from_ethernet(&packet) {

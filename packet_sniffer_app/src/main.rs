@@ -23,7 +23,6 @@ pub fn main_capture(device_name: String, file_name: String, interval: u64, filte
                 success = false
             }
         }
-
         if success {
             println!("Capture running...");
             println!("Type:\n- \"pause\" to temporarily pause the capture\n- \"resume\" to resume the capture\n- \"stop\" to interrupt the capture");
@@ -69,7 +68,6 @@ pub fn main_capture(device_name: String, file_name: String, interval: u64, filte
     );
 
     t1
-
 }
 
 
@@ -90,7 +88,6 @@ fn main() {
                 Err(e) => {println!("{}", e)}
             }
         }
-
     }
 }
 

@@ -14,6 +14,7 @@ use std::fmt::{Display, Formatter};
 use std::fs::{File, OpenOptions};
 use std::io::{BufWriter, Write};
 use chrono::{DateTime, Local};
+use etherparse::icmpv4::ParameterProblemHeader::{PointerIndicatesError, MissingRequiredOption, BadLength};
 use simple_dns::{CLASS, QCLASS, QTYPE};
 use crate::PacketSnifferError;
 
@@ -82,13 +83,15 @@ impl Report {
 
 
 #[derive(Debug)]
-/// Struct representing a pair of tuple (String, String). It is used in order to identify the package uniquely.
+/// Struct representing a pair of tuple (String, String). It is used in order to identify address/port pairs uniquely.
+/// pair is composed of (address, port)
 pub struct AddressPortPair {
     pub first_pair: (String, String),
     pub second_pair: (String, String)
 
 }
 
+/// PartialEq to make two pairs that have first pair and second pair swapped be equal (src and dest do not matter)
 impl PartialEq for AddressPortPair {
     fn eq(&self, other: &Self) -> bool {
         //Sorgente == Sorgente e Destinazione == Destinazione
@@ -154,15 +157,15 @@ pub fn icmpv6_type_parser(icmp_type: Option<Icmpv6Type>) -> Option<String>{
         // Unknown is used when further decoding is currently not supported for the icmp type & code.
         // You can still further decode the packet on your own by using the raw data in this enum
         // together with `headers.payload` (contains the packet data after the 8th byte)
-        Icmpv6Type::Unknown{ type_u8, code_u8, bytes5to8 } => {
+        Icmpv6Type::Unknown{ type_u8, code_u8, bytes5to8: _ } => {
             return Some(format!("Unknown, type: {}, code: {}", type_u8, code_u8).to_string())
         },
-        Icmpv6Type::DestinationUnreachable(header) => return Some(format!("code: {}-Destination Unreachable",header.code_u8()).to_string()),
-        Icmpv6Type::PacketTooBig { mtu } => return Some(("code: 0-Packet too big").to_string()),
-        Icmpv6Type::TimeExceeded(code) => return Some(format!("code: {}-Time exceeded",code.code_u8()).to_string()),
-        Icmpv6Type::ParameterProblem(header) => return Some(format!("code: {}-Parameter problem",header.code.code_u8()).to_string()),
-        Icmpv6Type::EchoRequest(header) => return Some("code: 0-Echo request".to_string()),
-        Icmpv6Type::EchoReply(header) => return Some("code: 0-Echo reply".to_string()),
+        Icmpv6Type::DestinationUnreachable(header) => return Some(format!("Destination Unreachable - code: {}",header.code_u8()).to_string()),
+        Icmpv6Type::PacketTooBig { mtu } => return Some(format!("Packet too big mtu = {} - code: 0", mtu).to_string()),
+        Icmpv6Type::TimeExceeded(code) => return Some(format!("Time exceeded - code: {}",code.code_u8()).to_string()),
+        Icmpv6Type::ParameterProblem(header) => return Some(format!("Parameter problem - code: {}",header.code.code_u8()).to_string()),
+        Icmpv6Type::EchoRequest(_) => return Some("Echo request - code: 0".to_string()),
+        Icmpv6Type::EchoReply(_) => return Some("Echo reply - code: 0".to_string()),
     }
 }
 
@@ -176,19 +179,27 @@ pub fn icmpv4_type_parser(icmp_type: Option<Icmpv4Type>) -> Option<String> {
         Icmpv4Type::Unknown {
             type_u8,
             code_u8,
-            bytes5to8,
+            bytes5to8: _,
         } => return Some(format!("Unknown, type: {}, code: {}", type_u8, code_u8).to_string()),
-        Icmpv4Type::EchoReply(header) => {return Some("code: 0-Echo Reply".to_string())},
-        Icmpv4Type::DestinationUnreachable(header) => {return Some(format!("code: {}-Destination Unreachable", header.code_u8()).to_string())},
+        Icmpv4Type::EchoReply(_) => {return Some("Echo Reply - code: 0".to_string())},
+        Icmpv4Type::DestinationUnreachable(header) => {return Some(format!("Destination Unreachable - code: {}", header.code_u8()).to_string())},
         Icmpv4Type::Redirect(header) => {
-            let mut ip_addr = header.gateway_internet_address;
-            let mut s = format!("{}.{}.{}.{}", ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
-            return Some(format!("code: {}-Redirect {}", header.code.code_u8(), s).to_string())},
-        Icmpv4Type::EchoRequest(header) => {return Some("code: 0-Echo Request".to_string())},
-        Icmpv4Type::TimeExceeded(code)=> {return Some(format!("code: {}-Time Exceeded", code.code_u8()).to_string())},
-        Icmpv4Type::ParameterProblem(_) => {return Some("Parameter Problem".to_string())},
-        Icmpv4Type::TimestampRequest(tsMessage) => {return Some("code: 0-Timestamp Request".to_string())},
-        Icmpv4Type::TimestampReply(tsMessage) => {return Some("code: 0-Timestamp Reply".to_string())},
+            let ip_addr = header.gateway_internet_address;
+            let s = format!("{}.{}.{}.{}", ip_addr[0], ip_addr[1], ip_addr[2], ip_addr[3]);
+            return Some(format!("Redirect {} - code: {}", header.code.code_u8(), s).to_string())},
+        Icmpv4Type::EchoRequest(_) => {return Some("Echo Request - code: 0".to_string())},
+        Icmpv4Type::TimeExceeded(code)=> {return Some(format!("Time Exceeded - code: {}",code.code_u8()).to_string())},
+        Icmpv4Type::ParameterProblem(header) => {
+            let code;
+            match header {
+                PointerIndicatesError(_) => {code = "0"},
+                MissingRequiredOption => {code = "1"},
+                BadLength => {code = "2"},
+            }
+            return Some(format!("Parameter Problem - code: {}", code).to_string());
+        },
+        Icmpv4Type::TimestampRequest(_) => {return Some("Timestamp Request - code: 0".to_string())},
+        Icmpv4Type::TimestampReply(_) => {return Some("Timestamp Reply - code: 0".to_string())},
     };
 }
 
@@ -213,7 +224,6 @@ pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<Transp
                 return Some(TransportInfo{protocol: "TCP".to_string(), source_port: Some(header.source_port().to_string()), destination_port: Some(header.destination_port().to_string()), icmp_type: None});
             },
             TransportSlice::Unknown(ip_protocol_number) => {return Some(TransportInfo{protocol: format!("Unknown | IP protocol number: {}", ip_protocol_number).to_string(), source_port: None, destination_port: None, icmp_type: None});}
-            _ => {return None;}
 
         }
     }
@@ -228,9 +238,8 @@ pub struct NetworkInfo {
     /// Source address of the packet
     pub source_address: String,
     /// Destination address of the packet
-    pub destination_address: String
+    pub destination_address: String,
 }
-
 //Can also check extension headers
 /// Function that performs the parsing of network layer information. It takes as parameter an `Option<InternetSlice>`
 /// and return an `Option<NetworkInfo>`. The admitted protocol are Ipv4 and Ipv6.
@@ -444,9 +453,9 @@ pub fn write_file(filename: &str, report : &HashMap<AddressPortPair,Report>) -> 
 
     let vec = Vec::from_iter(report.iter());
     let local: DateTime<Local> = Local::now();
-    write!(file, "================================================\n");
-    write!(file, "NEW REPORT: {}\n",local);
-    write!(file, "================================================\n\n");
+    write!(file, "================================================\n").expect("unable to write to file");
+    write!(file, "NEW REPORT: {}\n",local).expect("unable to write to file");
+    write!(file, "================================================\n\n").expect("unable to write to file");
     for x in vec {
         let string_to_print = parse_report(x);
         write!(file, "{}", string_to_print).expect("unable to write to file");
@@ -489,7 +498,7 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
 
     string_report.push_str("Transport layer protocol: ");
     i = 0;
-    let mut tl_info_len = report.1.transport_layer_protocols.len();
+    let tl_info_len = report.1.transport_layer_protocols.len();
     for info in &report.1.transport_layer_protocols {
         string_report.push_str(info.as_str());
         if i != tl_info_len-1 {
@@ -506,7 +515,7 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     string_report.push_str("Link layer info:");
     string_report.push_str("\n");
     i = 0;
-    let mut link_info_len = report.1.link_layer_info.len();
+    let link_info_len = report.1.link_layer_info.len();
     for info in &report.1.link_layer_info {
         string_report.push_str(linkinfo_tostring(info).as_str());
         if i != link_info_len-1 {
@@ -520,7 +529,7 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     string_report.push_str("Icmp info:");
     string_report.push_str("\n");
     i = 0;
-    let mut icmp_info_len = report.1.icmp_info.len();
+    let icmp_info_len = report.1.icmp_info.len();
     for info in &report.1.icmp_info {
         string_report.push_str(info.as_str());
         if i != icmp_info_len-1 {
@@ -530,13 +539,10 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     }
     //string_report.push_str((report.1.icmp_info.to_string()).as_str());
     string_report.push_str("; \n");
-
-
-
     string_report.push_str("Dns info:");
     string_report.push_str("\n");
     i = 0;
-    let mut dns_info_len = report.1.dns_info.len();
+    let dns_info_len = report.1.dns_info.len();
     for info in &report.1.dns_info {
         string_report.push_str(info.as_str());
         if i != dns_info_len-1 {
