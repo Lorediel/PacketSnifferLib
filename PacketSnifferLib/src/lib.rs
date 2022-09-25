@@ -24,11 +24,9 @@ pub mod report;
 pub mod errors;
 
 
-use etherparse::InternetSlice::{Ipv4, Ipv6};
-use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp, Unknown};
 use etherparse::{SlicedPacket};
 use pcap::{Capture, Device, Packet};
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::thread::JoinHandle;
@@ -36,7 +34,6 @@ use std::string::String;
 use std::time::Duration;
 use report::*;
 use crate::errors::PacketSnifferError;
-use crate::PacketSnifferError::InvalidInterval;
 ///Struct useful to manage info about sniffed packages and to control the capture flow.
 pub struct PacketCatcher{
     /// Arc that has a condition variable and a Mutex with the value to stop and resume the capture process
@@ -302,7 +299,15 @@ fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report
 
                 let ts = packet.header.ts;
                 let bytes: u32 = packet.header.len;
-                let this_entry = report_map.entry(pair).or_insert(Report::new(
+                report_map.entry(pair)
+                    .and_modify(|val| val.update_report(ts.tv_sec.unsigned_abs().into(),
+                                              bytes,
+                                              tl.protocol.clone(),
+                                              nl.protocol.clone(),
+                                              ll.clone(),
+                                              icmp_string.clone(),
+                                              dns_string.clone().to_string()))
+                    .or_insert(Report::new(
                     ts.tv_sec.unsigned_abs().into(),
                     bytes,
                     tl.protocol.clone(),
@@ -310,17 +315,7 @@ fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report
                     ll.clone(),
                     icmp_string.clone(),
                     dns_string.clone().to_string()
-
                 ));
-                this_entry.update_report(
-                    ts.tv_sec.unsigned_abs().into(),
-                    bytes,
-                    tl.protocol.clone(),
-                    nl.protocol.clone(),
-                    ll.clone(),
-                    icmp_string.clone(),
-                    dns_string.clone().to_string()
-                );
             }
         }
     }

@@ -2,16 +2,13 @@ use std::collections::{HashMap, HashSet};
 
 use std::hash::{Hash, Hasher};
 
-use dns_parser::Question;
 use etherparse::{Icmpv4Type, Icmpv6Type, InternetSlice, LinkSlice, TransportSlice};
 use etherparse::InternetSlice::{Ipv4, Ipv6};
 use etherparse::TransportSlice::{Icmpv4, Icmpv6, Tcp, Udp};
-use etherparse::Icmpv6Type::*;
-use etherparse::Icmpv4Type::*;
 use etherparse::LinkSlice::Ethernet2;
 use std::{str};
 use std::fmt::{Display, Formatter};
-use std::fs::{File, OpenOptions};
+use std::fs::{OpenOptions};
 use std::io::{BufWriter, Write};
 use chrono::{DateTime, Local};
 use etherparse::icmpv4::ParameterProblemHeader::{PointerIndicatesError, MissingRequiredOption, BadLength};
@@ -208,8 +205,6 @@ pub fn icmpv4_type_parser(icmp_type: Option<Icmpv4Type>) -> Option<String> {
 pub fn parse_transport(transport_value: Option<TransportSlice>) -> Option<TransportInfo> {
     if transport_value.is_some() {
         match transport_value.unwrap() {
-            //Specificare dati Icmp con .icmp_type()
-            //table type con .type_u8
 
             Icmpv4(i_slice) => {
                 return Some(TransportInfo{protocol: "Icmpv4".to_string(), source_port: None, destination_port: None, icmp_type: icmpv4_type_parser(Some(i_slice.icmp_type()))});
@@ -276,10 +271,10 @@ impl Display for LinkInfo {
 
 impl PartialEq for LinkInfo {
     fn eq(&self, other: &Self) -> bool {
-        if (self.source_mac == other.source_mac && self.destination_mac == other.destination_mac && self.ether_type == other.ether_type) {
+        if self.source_mac == other.source_mac && self.destination_mac == other.destination_mac && self.ether_type == other.ether_type {
             return true
         }
-        if (self.source_mac == other.destination_mac && self.destination_mac == other.source_mac && self.ether_type == other.ether_type) {
+        if self.source_mac == other.destination_mac && self.destination_mac == other.source_mac && self.ether_type == other.ether_type {
             return true
         }
         return false
