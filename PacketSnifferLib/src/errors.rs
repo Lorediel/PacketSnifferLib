@@ -4,17 +4,17 @@ use std::fmt;
 #[derive(Debug)]
 ///Represent an enum of possible customized errors
 pub enum PacketSnifferError {
-    /// Refers to " Error: Invalid Interval value: x, interval must be greater than 100 ms".
+    /// Refers to this error message " Error: Invalid Interval value: x, interval must be greater than 100 ms".
     InvalidInterval(u64),
-    /// Refers to " Error: Invalid device name: x".
+    /// Refers to this error message " Cannot capture from device: x, check if the name is correct or if you have permissions.".
     InactivableCapture(String, String),
-    /// Refers to " Cannot capture from device: x, check if the name is correct or if you have permissions".
+    /// Refers to this error message " Error: Possible invalid device name: x.".
     InvalidCapture(String, String),
-    /// Refers to " Cannot get device list, check if you have permission or if there are available devices".
+    /// Refers to this error message " Cannot get device list, check if you have permission or if there are available devices".
     UnavailableDeviceList(String),
-    /// Refers to " File error: x".
+    /// Refers to this error message " File error: x".
     FileError(String),
-    /// Refers to "  "
+    /// Refers to this error message" Invalid filter: {}, check https://biot.com/capstats/bpf.html to know the syntax. "
     InvalidFilter(String, String)
 }
 
