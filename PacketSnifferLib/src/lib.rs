@@ -70,7 +70,7 @@ impl PacketCatcher {
         interval: u64,
         filter: Option<String>,
     ) -> Result<(), PacketSnifferError> {
-        if interval < 100 {
+        if interval < 100 || interval > 300000 {
             return Err(PacketSnifferError::InvalidInterval(interval));
         }
         let mut cap =
@@ -271,7 +271,7 @@ fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report
                 if tl.protocol == "UDP" &&  (first_port == "53" || second_port=="53") {
                     match simple_dns::Packet::parse(&value.payload){
                         Err(value1) => {
-                            if value1.to_string() != "Provided QType is invalid: 65" {
+                          if value1.to_string() != "Provided QType is invalid: 65" {
                                 println!("{:?}", value1.to_string())
                             }
                         },
@@ -294,8 +294,6 @@ fn parse_packet(packet: Packet, report_map: &mut HashMap<AddressPortPair, Report
                     Some(icmp) => icmp,
                     None => "".to_string()
                 };
-
-                //let link_string = linkinfo_tostring(ll);
 
                 let ts = packet.header.ts;
                 let bytes: u32 = packet.header.len;

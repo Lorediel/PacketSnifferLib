@@ -235,7 +235,7 @@ pub struct NetworkInfo {
     /// Destination address of the packet
     pub destination_address: String,
 }
-//Can also check extension headers
+
 /// Function that performs the parsing of network layer information. It takes as parameter an `Option<InternetSlice>`
 /// and return an `Option<NetworkInfo>`. The admitted protocol are Ipv4 and Ipv6.
 pub fn parse_network(ip_value: Option<InternetSlice>) -> Option<NetworkInfo> {
@@ -518,7 +518,7 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
         }
         i+=1;
     }
-    string_report.push_str("; \n");
+    string_report.push_str(" \n");
 
 
     string_report.push_str("Icmp info:");
@@ -533,7 +533,7 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
         i+=1;
     }
     //string_report.push_str((report.1.icmp_info.to_string()).as_str());
-    string_report.push_str("; \n");
+    string_report.push_str(" \n");
     string_report.push_str("Dns info:");
     string_report.push_str("\n");
     i = 0;
@@ -545,7 +545,6 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
         }
         i+=1;
     }
-    string_report.push_str("; \n");
 
     string_report.push( '\n');
     string_report.push( '\n');
