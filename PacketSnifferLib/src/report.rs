@@ -424,6 +424,7 @@ pub fn dns_info_to_string ( application_level: Option<DnsInfo>) -> String {
         dns_string.push_str("; Responses class: ");
         let response_class = format!("{:?}", application_level.as_ref().unwrap().response_class);
         dns_string.push_str(response_class.as_str());
+        dns_string.push('\n');
 
         dns_string
     }
@@ -540,11 +541,10 @@ pub fn parse_report(report : (&AddressPortPair,&Report)) -> String {
     let dns_info_len = report.1.dns_info.len();
     for info in &report.1.dns_info {
         string_report.push_str(info.as_str());
-        if i != dns_info_len-1 {
-            string_report.push_str(", ")
-        }
         i+=1;
     }
+
+
 
     string_report.push( '\n');
     string_report.push( '\n');
